@@ -1,11 +1,11 @@
+const cors = require('cors');
 const ethers = require('ethers');
 const express = require('express');
 
 const app = express();
 const port = process.env.port || 3000;
 
-// app.set('view engine', 'ejs');
-// app.use('/jsFile', express.static('./views/functions'))
+app.use(cors());
 
 app.get('/', (req, res) => res.send(new Date().toString()));
 
@@ -24,6 +24,7 @@ app.get('/verifySignMessage', async (req, res) => {
         if (userAddress) {
             res.json(
                 {
+                    success: true,
                     address: userAddress,
                     signature: req.query.signature,
                     signedMessage: req.query.messageToSign
