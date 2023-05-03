@@ -1,0 +1,19 @@
+{
+    "app": {
+        "name": "Web3Auth"
+    },
+    "server": {
+        "host": "127.0.0.1",
+        "port": 5000,
+        "numCores": 2,
+        "backgroundCores": 0,
+        "runBackgroundTasks": false
+    },
+    "mongodb": {
+        "url": ""
+    },
+    "chatServer": {
+        "login": "",
+        "signup": ""
+    }
+}
