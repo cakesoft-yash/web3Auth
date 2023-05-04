@@ -17,5 +17,7 @@
         "loginWithWallet": "",
         "signup": "",
         "userDetail": ""
-    }
+    },
+    "contractAddress": "",
+    "secretToDecrypt": ""
 }

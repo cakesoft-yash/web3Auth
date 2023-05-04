@@ -1,4 +1,7 @@
 'use strict';
+const config = require('config');
+const CryptoJS = require('crypto-js');
+
 function _getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -34,4 +37,17 @@ exports.trimTextOfObject = function (obj) {
     }
   }
   return obj;
+}
+
+exports.decrypt = function (cipherText) {
+  var reb64 = CryptoJS.enc.Hex.parse(cipherText);
+  var bytes = reb64.toString(CryptoJS.enc.Base64);
+  var decrypt = CryptoJS.AES.decrypt(bytes, config.secretToDecrypt);
+  var plain = decrypt.toString(CryptoJS.enc.Utf8);
+  return plain;
+}
+
+exports.networks = {
+  // chainId : RPC URL
+  80001: 'https://matic-mumbai.chainstacklabs.com' //for polygon testnet
 }
