@@ -24,3 +24,41 @@ exports.login = async function (obj) {
   });
   return result;
 }
+
+exports.signup = async function (obj) {
+  if (!obj.firstName) throw Error('FirstName is required');
+  if (!obj.lastName) throw Error('LastName is required');
+  if (!obj.phone) throw Error('Phone is required');
+  if (!obj.email) throw Error('Email is required');
+  if (!obj.password) throw Error('Password is required');
+  if (!obj.confirmPassword) throw Error('confirmPassword is required');
+  if (!obj.userName) throw Error('UserName is required');
+  if (!obj.displayUsername) throw Error('DisplayUsername is required');
+  if (obj.password !== obj.confirmPassword) throw Error('Password mismatch');
+  let result = await new Promise((resolve, reject) => {
+    request.post({
+      url: config.chatServer.signup,
+      body: {
+        signInMethod: 'web2',
+        firstName: obj.firstName,
+        lastName: obj.lastName,
+        phone: obj.phone,
+        email: obj.email,
+        password: obj.password,
+        userName: obj.userName,
+        loggedInApp: 'zti',
+        displayUsername: obj.displayUsername,
+        ztiAppName: obj.ztiAppName || 'zti',
+      },
+      json: true
+    }, function (err, httpResponse, response) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      if (!response.success) reject(response);
+      resolve(response);
+    });
+  });
+  return result;
+}

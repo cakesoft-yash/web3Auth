@@ -14,6 +14,8 @@
     },
     "chatServer": {
         "login": "",
-        "signup": ""
+        "loginWithWallet": "",
+        "signup": "",
+        "userDetail": ""
     }
 }

@@ -16,14 +16,14 @@ try {
     console.log('marketplaceDbConnection', error);
 }
 
-// let chatDbConnection = mongoose.createConnection(config.mongodb.chatDbUrl, {
-//     useNewUrlParser: true,
-//     useCreateIndex: true,
-//     useUnifiedTopology: true
-// });
+let chatDbConnection = mongoose.createConnection(config.mongodb.chatDbUrl, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+});
 
-// chatDbConnection.on('connected', function () {
-//     console.log('Succesfully Connected to the Chat Mongodb');
-// });
+chatDbConnection.on('connected', function () {
+    console.log('Succesfully Connected to the Chat Mongodb');
+});
 
-module.exports = { marketplaceDbConnection };
+module.exports = { marketplaceDbConnection, chatDbConnection };
