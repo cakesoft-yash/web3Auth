@@ -15,8 +15,7 @@
     "chatServer": {
         "login": "",
         "loginWithWallet": "",
-        "signup": "",
-        "userDetail": ""
+        "signup": ""
     },
     "contractAddress": "",
     "secretToDecrypt": ""
