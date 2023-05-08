@@ -20,6 +20,7 @@ exports.signup = async function (obj) {
   if (!obj.userName) throw Error('UserName is required');
   if (!obj.displayUsername) throw Error('DisplayUsername is required');
   if (!obj.walletAddress) throw Error('Wallet address is required');
+  if (!obj.ztiAppName) throw Error('Zti AppName is required');
 
   // if (!obj.chainId) throw Error('Chain Id is required');
   // if (!obj.walletAddress) throw Error('Wallet address is required');
@@ -30,7 +31,7 @@ exports.signup = async function (obj) {
   //   .call();
   // let data = await Utils.decrypt(response);
   // if (data) data = JSON.parse(data);
-  
+
   let result = await new Promise((resolve, reject) => {
     request.post({
       url: config.chatServer.signup,
@@ -44,7 +45,7 @@ exports.signup = async function (obj) {
         userName: obj.userName,
         displayUsername: obj.displayUsername,
         loggedInApp: 'zti',
-        ztiAppName: obj.ztiAppName || 'zti',
+        ztiAppName: obj.ztiAppName,
       },
       json: true
     }, function (err, httpResponse, response) {
