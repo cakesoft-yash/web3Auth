@@ -1,4 +1,5 @@
 const UserService = require('../services/user.services');
+const AdminService = require('../services/admin.services');
 
 exports.verifyTokenForUser = async function (req, res, next) {
     try {
@@ -28,4 +29,33 @@ exports.verifyTokenForUser = async function (req, res, next) {
         console.log('verifyTokenForUser', error);
         res.status(500).send({ success: false, message: error.message || error });
     }
+}
+
+exports.verifyTokenForAdmin = async function (req, res, next) {
+    try {
+        if (!req.headers['authorization']) {
+            res.sendStatus(401);
+            return;
+        }
+        let [scheme, token] = req.headers['authorization'].toString().split(' ');
+        if (!scheme || !token) {
+            res.sendStatus(401);
+            return;
+        }
+        if (scheme.toLowerCase() != 'bearer') {
+            res.sendStatus(401);
+            return;
+        }
+        let user = await AdminService.getUserByToken(token);
+        if (!user) {
+            res.sendStatus(401);
+            return;
+        };
+        Object.assign(user, { token });
+        req['user'] = user;
+    } catch (error) {
+        console.log('error', error);
+        res.status(500).send({ success: false, message: error.message });
+    }
+    next();
 }

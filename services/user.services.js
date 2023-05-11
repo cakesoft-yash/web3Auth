@@ -44,3 +44,54 @@ exports.userDetail = async function (queryParams, user) {
     }
   };
 }
+
+exports.getUsers = async function (obj, user) {
+  if (!obj.membershipId) throw Error('Membership Id is required');
+  if (!obj.chainId) throw Error('Chain Id is required');
+  if (!obj.ztiAppName) throw Error('Community name is required');
+  let page = parseInt(obj.page) || 0;
+  let pageLimit = parseInt(obj.pageLimit) || 10;
+  page = page > 1 ? page - 1 : 0;
+  let query = {
+    walletAddress: { $exists: true },
+    loggedInApp: obj.ztiAppName
+  };
+  let users = await chatUser.aggregate([
+    { $match: query },
+    {
+      $project: {
+        emails: 1,
+        firstName: 1,
+        lastName: 1,
+        phone: 1,
+        userName: 1,
+        displayUsername: 1,
+        walletAddress: 1
+      }
+    },
+    { $sort: { createdAt: -1 } },
+    { $skip: page * pageLimit },
+    { $limit: pageLimit }
+  ]);
+  const web3 = new Web3(Utils.networks[obj.chainId]);
+  const myContract = await new web3.eth.Contract(membershipABI, config.contractAddress);
+  for (let index = 0; index < users.length; index++) {
+    const user = users[index];
+    const response = await myContract.methods
+      .getUser(user.walletAddress)
+      .call();
+    let membership;
+    if (response && response.membershipPurchased) {
+      membership = response.membershipPurchased.find(mebership => mebership.membershipId === obj.membershipId);
+      membership = membership ? membership : { status: 'pending' };
+    }
+    Object.assign(user, { membershipStatus: membership.status });
+  }
+  let totalUsers = await chatUser.countDocuments(query);
+  return {
+    success: true,
+    totalUsers,
+    pages: Math.ceil(totalUsers / pageLimit),
+    users
+  };
+}
