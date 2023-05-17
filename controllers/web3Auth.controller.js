@@ -24,6 +24,30 @@ exports.signup = async function (req, res) {
     }
 }
 
+exports.verifyData = async function (req, res) {
+    try {
+        let result = await Web3AuthService.verifyData(req.body);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+exports.uploadData = async function (req, res) {
+    try {
+        let result = await Web3AuthService.uploadData(req.body);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
 exports.connectWallet = async function (req, res) {
     try {
         let result = await Web3AuthService.connectWallet(req.body);

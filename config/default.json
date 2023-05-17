@@ -15,7 +15,14 @@
     "chatServer": {
         "login": "",
         "loginWithWallet": "",
-        "signup": ""
+        "signup": "",
+        "verifyData": ""
+    },
+    "ipfs": {
+        "host": "",
+        "port": "",
+        "protocol": "",
+        "gateway": ""
     },
     "contractAddress": "",
     "secretToDecrypt": ""

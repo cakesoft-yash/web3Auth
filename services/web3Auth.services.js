@@ -1,9 +1,7 @@
-// const Web3 = require('web3');
 const config = require('config');
 const ethers = require('ethers');
 const request = require('request');
-// const Utils = require('../utils');
-// const membershipABI = require('../contracts_abi/membership.json');
+const IPFS = import('ipfs-http-client');
 
 exports.getSignMessage = async function () {
   return {
@@ -13,6 +11,7 @@ exports.getSignMessage = async function () {
 }
 
 exports.signup = async function (obj) {
+  if (!obj.tokenId) throw Error('Token Id is required');
   if (!obj.firstName) throw Error('FirstName is required');
   if (!obj.lastName) throw Error('LastName is required');
   if (!obj.phone) throw Error('Phone is required');
@@ -21,17 +20,6 @@ exports.signup = async function (obj) {
   if (!obj.displayUsername) throw Error('DisplayUsername is required');
   if (!obj.walletAddress) throw Error('Wallet address is required');
   if (!obj.ztiAppName) throw Error('Zti AppName is required');
-
-  // if (!obj.chainId) throw Error('Chain Id is required');
-  // if (!obj.walletAddress) throw Error('Wallet address is required');
-  // const web3 = new Web3(Utils.networks[Number(obj.chainId)]);
-  // const myContract = await new web3.eth.Contract(membershipABI, config.contractAddress);
-  // const response = await myContract.methods
-  //   .getUser(obj.walletAddress)
-  //   .call();
-  // let data = await Utils.decrypt(response);
-  // if (data) data = JSON.parse(data);
-
   let result = await new Promise((resolve, reject) => {
     request.post({
       url: config.chatServer.signup,
@@ -46,6 +34,7 @@ exports.signup = async function (obj) {
         displayUsername: obj.displayUsername,
         loggedInApp: 'zti',
         ztiAppName: obj.ztiAppName,
+        tokenId: obj.tokenId
       },
       json: true
     }, function (err, httpResponse, response) {
@@ -58,6 +47,60 @@ exports.signup = async function (obj) {
     });
   });
   return result;
+}
+
+exports.verifyData = async function (obj) {
+  if (!obj.phone) throw Error('Phone is required');
+  if (!obj.email) throw Error('Email is required');
+  if (!obj.userName) throw Error('UserName is required');
+  if (!obj.displayUsername) throw Error('DisplayUsername is required');
+  if (!obj.walletAddress) throw Error('Wallet address is required');
+  let result = await new Promise((resolve, reject) => {
+    request.post({
+      url: config.chatServer.verifyData,
+      body: {
+        signInMethod: 'web3',
+        walletAddress: obj.walletAddress,
+        phone: obj.phone,
+        email: obj.email,
+        userName: obj.userName,
+        displayUsername: obj.displayUsername,
+      },
+      json: true
+    }, function (err, httpResponse, response) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      if (!response.success) reject(response);
+      resolve(response);
+    });
+  });
+  return result;
+}
+
+exports.uploadData = async function (obj) {
+  if (!obj.tokenId) throw Error('Token Id is required');
+  if (!obj.firstName) throw Error('FirstName is required');
+  if (!obj.lastName) throw Error('LastName is required');
+  if (!obj.phone) throw Error('Phone is required');
+  if (!obj.email) throw Error('Email is required');
+  if (!obj.userName) throw Error('UserName is required');
+  if (!obj.displayUsername) throw Error('DisplayUsername is required');
+  if (!obj.walletAddress) throw Error('Wallet address is required');
+  if (!obj.ztiAppName) throw Error('Zti AppName is required');
+  const ipfs = (await IPFS).create(
+    {
+      host: config.ipfs.host,
+      port: config.ipfs.port,
+      protocol: config.ipfs.protocol
+    }
+  );
+  const result = await ipfs.add(JSON.stringify(obj));
+  return {
+    success: true,
+    tokenUri: `${config.ipfs.gateway}/ipfs/${result.path}`
+  };
 }
 
 exports.connectWallet = async function (obj) {

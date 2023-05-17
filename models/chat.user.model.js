@@ -35,6 +35,9 @@ const UserSchema = new mongoose.Schema({
     ],
     loggedInApp: {
         type: String
+    },
+    tokenId: {
+        type: Number
     }
 });
 

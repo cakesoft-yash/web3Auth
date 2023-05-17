@@ -11,7 +11,7 @@ exports.verifyToken = async function (token) {
 }
 
 exports.userDetail = async function (queryParams) {
-  if (!queryParams.membershipId) throw Error('Membership Id is required');
+  if (!queryParams.tokenId) throw Error('Token Id is required');
   if (!queryParams.chainId) throw Error('Chain Id is required');
   if (!queryParams.walletAddress) throw Error('WalletAddress is required');
   let user = await chatUser.findOne(
@@ -29,18 +29,13 @@ exports.userDetail = async function (queryParams) {
   const web3 = new Web3(Utils.networks[queryParams.chainId]);
   const myContract = await new web3.eth.Contract(membershipABI, config.contractAddress);
   const response = await myContract.methods
-    .getUser(user.walletAddress)
+    .getMembershipStatus(queryParams.tokenId)
     .call();
-  let membership;
-  if (response && response.membershipPurchased) {
-    membership = response.membershipPurchased.find(mebership => mebership.membershipId === queryParams.membershipId);
-    membership = membership ? membership : {};
-  }
   return {
     success: true,
     userFound: true,
     user: {
-      membershipStatus: membership.status,
+      membershipStatus: response ? response : 'pending',
       email: user.emails[0].address,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -49,6 +44,19 @@ exports.userDetail = async function (queryParams) {
       displayUsername: user.displayUsername,
       walletAddress: user.walletAddress
     }
+  };
+}
+
+exports.getTokenId = async function (queryParams) {
+  if (!queryParams.walletAddress) throw Error('WalletAddress is required');
+  let user = await chatUser.findOne(
+    {
+      walletAddress: queryParams.walletAddress
+    }
+  );
+  return {
+    success: true,
+    tokenId: user && user.tokenId ? user.tokenId : null
   };
 }
 
@@ -85,7 +93,7 @@ exports.getUsers = async function (obj, user) {
   for (let index = 0; index < users.length; index++) {
     const user = users[index];
     const response = await myContract.methods
-      .getUser(user.walletAddress)
+      .getMembershipStatus(user.tokenId)
       .call();
     let membership;
     if (response && response.membershipPurchased) {
@@ -108,7 +116,7 @@ exports.getCredentials = async function (obj, user) {
   const web3 = new Web3(Utils.networks[80001]);
   const myContract = await new web3.eth.Contract(membershipABI, config.contractAddress);
   const response = await myContract.methods
-    .getUser(user.walletAddress)
+    .getMembershipStatus(user.tokenId)
     .call();
   let result = [];
   for (let index = 0; index < response.membershipPurchased.length; index++) {
