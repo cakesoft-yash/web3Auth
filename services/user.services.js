@@ -107,27 +107,25 @@ exports.getUsers = async function (obj, user) {
 }
 
 exports.getCredentials = async function (obj, user) {
-  // const web3 = new Web3(Utils.networks[obj.chainId]);
-  const web3 = new Web3(Utils.networks[80001]);
-  const myContract = await new web3.eth.Contract(membershipABI, config.contractAddress);
-  const response = await myContract.methods
-    .getMembershipStatus(user.tokenId)
-    .call();
   let result = [];
-  for (let index = 0; index < response.membershipPurchased.length; index++) {
-    const membershipPurchased = response.membershipPurchased[index];
-    result.push(
-      {
-        membershipName: membershipPurchased.membership.membershipName,
-        membershipDuration: membershipPurchased.membership.unlimitedDuration
-          ? 'Forever'
-          : membershipPurchased.membership.membershipDuration,
-        membershipCount: membershipPurchased.membership.unlimitedCount
-          ? 'Unlimited'
-          : membershipPurchased.membership.membershipCount,
-        contract: `https://mumbai.polygonscan.com/address/${config.contractAddress}`
-      }
-    );
+  if (user.tokenId) {
+    // const web3 = new Web3(Utils.networks[obj.chainId]);
+    const web3 = new Web3(Utils.networks[80001]);
+    const myContract = await new web3.eth.Contract(membershipABI, config.contractAddress);
+    const response = await myContract.methods
+      .getMembershipStatus(user.tokenId)
+      .call();
+    if (response) {
+      result.push(
+        {
+          communityName: user.loggedInApp,
+          membershipStatus: response,
+          name: 'Membership Credential',
+          membershipDuration: response === 'pending' ? 'pending' : 'Forever',
+          membershipCount: response === 'pending' ? 'pending' : 'Unlimited',
+        }
+      );
+    }
   }
   return {
     success: true,
