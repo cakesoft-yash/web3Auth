@@ -61,7 +61,6 @@ exports.getTokenId = async function (queryParams) {
 }
 
 exports.getUsers = async function (obj, user) {
-  if (!obj.membershipId) throw Error('Membership Id is required');
   if (!obj.chainId) throw Error('Chain Id is required');
   if (!obj.ztiAppName) throw Error('Community name is required');
   let page = parseInt(obj.page) || 0;
@@ -81,7 +80,8 @@ exports.getUsers = async function (obj, user) {
         phone: 1,
         userName: 1,
         displayUsername: 1,
-        walletAddress: 1
+        walletAddress: 1,
+        tokenId: 1
       }
     },
     { $sort: { createdAt: -1 } },
@@ -95,12 +95,7 @@ exports.getUsers = async function (obj, user) {
     const response = await myContract.methods
       .getMembershipStatus(user.tokenId)
       .call();
-    let membership;
-    if (response && response.membershipPurchased) {
-      membership = response.membershipPurchased.find(mebership => mebership.membershipId === obj.membershipId);
-      membership = membership ? membership : { status: 'pending' };
-    }
-    Object.assign(user, { membershipStatus: membership.status });
+    Object.assign(user, { membershipStatus: response ? response : 'pending' });
   }
   let totalUsers = await chatUser.countDocuments(query);
   return {
