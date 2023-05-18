@@ -1,6 +1,7 @@
 const Web3 = require('web3');
 const config = require('config');
 const chatUser = require('../models/chat.user.model');
+const Web3UserTransaction = require('../models/web3UserTransaction.model');
 const Utils = require('../utils');
 const membershipABI = require('../contracts_abi/membership.json');
 
@@ -130,5 +131,18 @@ exports.getCredentials = async function (obj, user) {
   return {
     success: true,
     result
+  };
+}
+
+exports.getTransactions = async function (obj, user) {
+  if (!obj.walletAddress) throw Error('WalletAddress is required');
+  let transactions = await Web3UserTransaction.find(
+    {
+      walletAddress: obj.walletAddress
+    }
+  );
+  return {
+    success: true,
+    transactions
   };
 }
