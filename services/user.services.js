@@ -1,5 +1,6 @@
 const Web3 = require('web3');
 const config = require('config');
+const { v4: uuidv4 } = require('uuid');
 const chatUser = require('../models/chat.user.model');
 const Web3UserTransaction = require('../models/web3UserTransaction.model');
 const Utils = require('../utils');
@@ -144,5 +145,18 @@ exports.getTransactions = async function (obj, user) {
   return {
     success: true,
     transactions
+  };
+}
+
+exports.createTransactions = async function (obj, user) {
+  if (!obj.transactionId) throw Error('TransactionId is required');
+  if (!obj.walletAddress) throw Error('WalletAddress is required');
+  if (!obj.date) throw Error('Date is required');
+  if (!obj.event) throw Error('Event is required');
+  if (!obj.tokenId) throw Error('TokenId is required');
+  Object.assign(obj, { _id: uuidv4() });
+  await Web3UserTransaction.create(obj);
+  return {
+    success: true
   };
 }
