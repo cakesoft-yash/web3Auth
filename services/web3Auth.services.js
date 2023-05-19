@@ -2,6 +2,7 @@ const config = require('config');
 const ethers = require('ethers');
 const request = require('request');
 const IPFS = import('ipfs-http-client');
+const UserService = require('../services/user.services');
 
 exports.getSignMessage = async function () {
   return {
@@ -20,6 +21,8 @@ exports.signup = async function (obj) {
   if (!obj.displayUsername) throw Error('DisplayUsername is required');
   if (!obj.walletAddress) throw Error('Wallet address is required');
   if (!obj.ztiAppName) throw Error('Zti AppName is required');
+  if (!obj.transactionId) throw Error('TransactionId is required');
+  if (!obj.date) throw Error('Date is required');
   let result = await new Promise((resolve, reject) => {
     request.post({
       url: config.chatServer.signup,
@@ -46,6 +49,15 @@ exports.signup = async function (obj) {
       resolve(response);
     });
   });
+  await UserService.createTransaction(
+    {
+      transactionId: obj.transactionId,
+      walletAddress: obj.walletAddress,
+      date: obj.date,
+      event: 'mint',
+      tokenId: obj.tokenId,
+    }
+  );
   return result;
 }
 

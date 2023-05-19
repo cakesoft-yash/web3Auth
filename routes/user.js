@@ -10,6 +10,6 @@ router.get('/getTokenId', UserController.getTokenId);
 router.post('/list', AuthController.verifyTokenForAdmin, UserController.getUsers);
 router.post('/getCredentials', AuthController.verifyTokenForUser, UserController.getCredentials);
 router.post('/transactions', AuthController.verifyTokenForAdmin, UserController.getTransactions);
-router.post('/transaction/create', AuthController.verifyTokenForAdmin, UserController.createTransactions);
+router.post('/transaction/create', AuthController.verifyTokenForAdmin, UserController.createTransaction);
 
 module.exports = router;

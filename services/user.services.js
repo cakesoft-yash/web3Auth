@@ -148,7 +148,7 @@ exports.getTransactions = async function (obj, user) {
   };
 }
 
-exports.createTransactions = async function (obj, user) {
+exports.createTransaction = async function (obj, user) {
   if (!obj.transactionId) throw Error('TransactionId is required');
   if (!obj.walletAddress) throw Error('WalletAddress is required');
   if (!obj.date) throw Error('Date is required');
