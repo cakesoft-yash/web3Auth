@@ -25,5 +25,6 @@
         "gateway": ""
     },
     "contractAddress": "",
+    "contractAddressWithExpiry": "",
     "secretToDecrypt": ""
 }

@@ -37,7 +37,8 @@ exports.signup = async function (obj) {
         displayUsername: obj.displayUsername,
         loggedInApp: 'zti',
         ztiAppName: obj.ztiAppName,
-        tokenId: obj.tokenId
+        tokenId: obj.tokenId,
+        membershipWithExpiry: obj.membershipWithExpiry || false
       },
       json: true
     }, function (err, httpResponse, response) {
@@ -58,6 +59,17 @@ exports.signup = async function (obj) {
       tokenId: obj.tokenId,
     }
   );
+  if (obj.paymentTransactionId) {
+    await UserService.createTransaction(
+      {
+        transactionId: obj.paymentTransactionId,
+        walletAddress: obj.walletAddress,
+        date: obj.paymentTransactionDate,
+        event: 'payment',
+        tokenId: obj.tokenId,
+      }
+    );
+  }
   return result;
 }
 
