@@ -42,11 +42,19 @@ exports.userDetail = async function (queryParams) {
   const response = await myContract.methods
     .getMembershipStatus(queryParams.tokenId)
     .call();
+  let membershipStatus; let expiryTime;
+  if (response._membershipStatus) {
+    membershipStatus = response._membershipStatus;
+    expiryTime = response._expiryTime;
+  } else {
+    membershipStatus = response ? response : 'pending';
+  }
   return {
     success: true,
     userFound: true,
     user: {
-      membershipStatus: response ? response : 'pending',
+      expiryTime,
+      membershipStatus,
       email: user.emails[0].address,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -115,7 +123,14 @@ exports.getUsers = async function (obj, user) {
     const response = await myContract.methods
       .getMembershipStatus(user.tokenId)
       .call();
-    Object.assign(user, { membershipStatus: response ? response : 'pending' });
+    let membershipStatus; let expiryTime;
+    if (response._membershipStatus) {
+      membershipStatus = response._membershipStatus;
+      expiryTime = response._expiryTime;
+    } else {
+      membershipStatus = response ? response : 'pending';
+    }
+    Object.assign(user, { membershipStatus, expiryTime });
   }
   let totalUsers = await chatUser.countDocuments(query);
   return {
@@ -144,10 +159,18 @@ exports.getCredentials = async function (obj, user) {
       .getMembershipStatus(user.tokenId)
       .call();
     if (response) {
+      let membershipStatus; let expiryTime;
+      if (response._membershipStatus) {
+        membershipStatus = response._membershipStatus;
+        expiryTime = response._expiryTime;
+      } else {
+        membershipStatus = response ? response : 'pending';
+      }
       result.push(
         {
           communityName: user.loggedInApp,
-          membershipStatus: response,
+          membershipStatus,
+          expiryTime,
           name: 'Membership Credential',
           membershipDuration: response === 'pending' ? 'pending' : 'Forever',
           membershipCount: response === 'pending' ? 'pending' : 'Unlimited',
