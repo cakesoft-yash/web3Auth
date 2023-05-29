@@ -1,12 +1,13 @@
-const config = require('config');
 const cors = require('cors');
 const http = require('http');
 const ethers = require('ethers');
+const config = require('config');
 const routes = require('./routes');
 const cluster = require('cluster');
 const express = require('express');
 const bodyParser = require('body-parser');
 require('./db_connect/database_connect');
+const NotificationService = require('./services/notification.service');
 
 const app = express();
 
@@ -25,6 +26,11 @@ async function _master() {
             args: [(i + 1).toString()]
         })
         cluster.fork();
+        switch (i) {
+            case 1:
+                NotificationService.send();
+                break;
+        }
     }
     cluster.on('exit', (worker, code, signal) => {
         console.log('Worker died (' + worker.process.pid + ')');

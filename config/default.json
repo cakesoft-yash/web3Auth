@@ -12,6 +12,10 @@
     "mongodb": {
         "url": ""
     },
+    "sendNotification": {
+        "url": "",
+        "token": ""
+    },
     "chatServer": {
         "login": "",
         "loginWithWallet": "",

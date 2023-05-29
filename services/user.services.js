@@ -4,6 +4,7 @@ const request = require('request');
 const { v4: uuidv4 } = require('uuid');
 const chatUser = require('../models/chat.user.model');
 const Web3UserTransaction = require('../models/web3UserTransaction.model');
+const NotificationService = require('../services/notification.service');
 const Utils = require('../utils');
 const membershipABI = require('../contracts_abi/membership.json');
 const membershipWithExpiryABI = require('../contracts_abi/membershipExpiry.json');
@@ -154,7 +155,7 @@ exports.sendMessage = async function (obj, user) {
           username: user.chatUsername
         }
       );
-      let result = await new Promise((resolve, reject) => {
+      await new Promise((resolve, reject) => {
         request.post({
           headers: {
             Authorization: `bearer ${chatUserData.accessToken}`
@@ -174,9 +175,23 @@ exports.sendMessage = async function (obj, user) {
           resolve(response);
         });
       });
-      return result;
-    default:
-      break;
+      return {
+        success: true,
+        message: 'Message send successfully'
+      };
+    case 'notification':
+      await NotificationService.create(
+        {
+          _id: uuidv4(),
+          username: obj.toUsername,
+          title: 'Notification',
+          message: obj.message,
+        }
+      );
+      return {
+        success: true,
+        message: 'Notification send successfully'
+      };
   }
 }
 
