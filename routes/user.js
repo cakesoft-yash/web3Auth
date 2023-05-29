@@ -8,6 +8,7 @@ const UserController = require('../controllers/user.controller');
 router.get('/detail', UserController.userDetail);
 router.get('/getTokenId', UserController.getTokenId);
 router.post('/list', AuthController.verifyTokenForAdmin, UserController.getUsers);
+router.post('/sendMessage', AuthController.verifyTokenForAdmin, UserController.sendMessage);
 router.post('/getCredentials', AuthController.verifyTokenForUser, UserController.getCredentials);
 router.post('/transactions', AuthController.verifyTokenForAdmin, UserController.getTransactions);
 router.post('/transaction/create', AuthController.verifyTokenForAdmin, UserController.createTransaction);

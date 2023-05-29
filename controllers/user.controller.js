@@ -36,6 +36,18 @@ exports.getUsers = async function (req, res) {
     }
 }
 
+exports.sendMessage = async function (req, res) {
+    try {
+        let result = await UserService.sendMessage(req.body, req.user);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
 exports.getCredentials = async function (req, res) {
     try {
         let result = await UserService.getCredentials(req.body, req.user);

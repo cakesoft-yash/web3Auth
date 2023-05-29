@@ -65,7 +65,10 @@ const AdminSchema = new mongoose.Schema({
         {
             type: String
         }
-    ]
+    ],
+    chatUsername: {
+        type: String
+    }
 }, {
     timestamps: true,
     toObject: {

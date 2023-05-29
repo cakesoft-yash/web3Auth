@@ -1,5 +1,6 @@
 const Web3 = require('web3');
 const config = require('config');
+const request = require('request');
 const { v4: uuidv4 } = require('uuid');
 const chatUser = require('../models/chat.user.model');
 const Web3UserTransaction = require('../models/web3UserTransaction.model');
@@ -86,9 +87,14 @@ exports.getUsers = async function (obj, user) {
   let pageLimit = parseInt(obj.pageLimit) || 10;
   page = page > 1 ? page - 1 : 0;
   let query = {
-    walletAddress: { $exists: true },
     loggedInApp: obj.ztiAppName
   };
+  if (obj.membershipStatus) Object.assign(query,
+    {
+      walletAddress: { $exists: true },
+      membershipStatus: obj.membershipStatus
+    }
+  );
   let users = await chatUser.aggregate([
     { $match: query },
     {
@@ -97,11 +103,12 @@ exports.getUsers = async function (obj, user) {
         firstName: 1,
         lastName: 1,
         phone: 1,
-        userName: 1,
+        username: 1,
         displayUsername: 1,
         walletAddress: 1,
         tokenId: 1,
-        membershipWithExpiry: 1
+        membershipWithExpiry: 1,
+        membershipStatus: 1
       }
     },
     { $sort: { createdAt: -1 } },
@@ -115,22 +122,17 @@ exports.getUsers = async function (obj, user) {
     if (user.membershipWithExpiry) {
       contractAddress = config.contractAddressWithExpiry;
       membershipABI_JSON = membershipWithExpiryABI;
-    } else {
-      contractAddress = config.contractAddress;
-      membershipABI_JSON = membershipABI;
+      const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
+      const response = await myContract.methods
+        .getMembershipStatus(user.tokenId)
+        .call();
+      let membershipStatus; let expiryTime;
+      if (response._membershipStatus) {
+        membershipStatus = response._membershipStatus;
+        expiryTime = response._expiryTime;
+        Object.assign(user, { membershipStatus, expiryTime });
+      }
     }
-    const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
-    const response = await myContract.methods
-      .getMembershipStatus(user.tokenId)
-      .call();
-    let membershipStatus; let expiryTime;
-    if (response._membershipStatus) {
-      membershipStatus = response._membershipStatus;
-      expiryTime = response._expiryTime;
-    } else {
-      membershipStatus = response ? response : 'pending';
-    }
-    Object.assign(user, { membershipStatus, expiryTime });
   }
   let totalUsers = await chatUser.countDocuments(query);
   return {
@@ -139,6 +141,43 @@ exports.getUsers = async function (obj, user) {
     pages: Math.ceil(totalUsers / pageLimit),
     users
   };
+}
+
+exports.sendMessage = async function (obj, user) {
+  if (!obj.messageType) throw Error('Message type is required');
+  if (!obj.message) throw Error('Message is required');
+  if (!obj.toUsername) throw Error('To username is required');
+  switch (obj.messageType) {
+    case 'chat':
+      let chatUserData = await chatUser.findOne(
+        {
+          username: user.chatUsername
+        }
+      );
+      let result = await new Promise((resolve, reject) => {
+        request.post({
+          headers: {
+            Authorization: `bearer ${chatUserData.accessToken}`
+          },
+          url: config.chatServer.sendMessage,
+          body: {
+            message: obj.message,
+            toUsername: obj.toUsername
+          },
+          json: true
+        }, function (err, httpResponse, response) {
+          if (err) {
+            reject(err);
+            return;
+          }
+          if (!response.success) reject(response);
+          resolve(response);
+        });
+      });
+      return result;
+    default:
+      break;
+  }
 }
 
 exports.getCredentials = async function (obj, user) {
@@ -205,6 +244,18 @@ exports.createTransaction = async function (obj, user) {
   if (!obj.tokenId) throw Error('TokenId is required');
   Object.assign(obj, { _id: uuidv4() });
   await Web3UserTransaction.create(obj);
+  if (obj.updateMembershipStatus) {
+    await chatUser.findOneAndUpdate(
+      {
+        tokenId: obj.tokenId
+      },
+      {
+        $set: {
+          membershipStatus: obj.event
+        }
+      }
+    );
+  }
   return {
     success: true
   };

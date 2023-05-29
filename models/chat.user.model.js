@@ -42,6 +42,9 @@ const UserSchema = new mongoose.Schema({
     membershipWithExpiry: {
         type: Boolean
     },
+    membershipStatus: {
+        type: String
+    }
 });
 
 const User = chatDbConnection.model('User', UserSchema);
