@@ -44,6 +44,9 @@ const UserSchema = new mongoose.Schema({
     },
     membershipStatus: {
         type: String
+    },
+    createdAt: {
+        type: Date
     }
 });
 

@@ -110,7 +110,8 @@ exports.getUsers = async function (obj, user) {
         walletAddress: 1,
         tokenId: 1,
         membershipWithExpiry: 1,
-        membershipStatus: 1
+        membershipStatus: 1,
+        createdAt: 1
       }
     },
     { $sort: { createdAt: -1 } },
