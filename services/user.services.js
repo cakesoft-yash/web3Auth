@@ -88,11 +88,12 @@ exports.getUsers = async function (obj, user) {
   let pageLimit = parseInt(obj.pageLimit) || 10;
   page = page > 1 ? page - 1 : 0;
   let query = {
-    loggedInApp: obj.ztiAppName
+    'registeredApps.appName': obj.ztiAppName
   };
   if (obj.membershipStatus) Object.assign(query,
     {
       walletAddress: { $exists: true },
+      walletAddress: { $ne: null },
       membershipStatus: obj.membershipStatus
     }
   );
