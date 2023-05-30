@@ -243,8 +243,10 @@ exports.getCredentials = async function (obj, user) {
 
 exports.getTransactions = async function (obj, user) {
   if (!obj.walletAddress) throw Error('WalletAddress is required');
+  if (!obj.tokenId) throw Error('Token Id is required');
   let transactions = await Web3UserTransaction.find(
     {
+      tokenId: obj.tokenId,
       walletAddress: obj.walletAddress
     }
   );
