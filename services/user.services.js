@@ -254,12 +254,13 @@ exports.getTransactions = async function (obj, user) {
   };
 }
 
-exports.createTransaction = async function (obj, user) {
+exports.createTransaction = async function (obj, adminUser) {
   if (!obj.transactionId) throw Error('TransactionId is required');
   if (!obj.walletAddress) throw Error('WalletAddress is required');
   if (!obj.date) throw Error('Date is required');
   if (!obj.event) throw Error('Event is required');
   if (!obj.tokenId) throw Error('TokenId is required');
+  if (obj.note) Object.assign(obj, { note: obj.note });
   Object.assign(obj, { _id: uuidv4() });
   await Web3UserTransaction.create(obj);
   if (obj.updateMembershipStatus) {
@@ -273,6 +274,16 @@ exports.createTransaction = async function (obj, user) {
         }
       }
     );
+    if (obj.event === 'approved') {
+      await NotificationService.create(
+        {
+          _id: uuidv4(),
+          username: obj.username,
+          title: 'Membership Approved',
+          message: 'Your membership has been approved',
+        }
+      );
+    }
   }
   return {
     success: true

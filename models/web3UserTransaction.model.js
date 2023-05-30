@@ -25,6 +25,10 @@ const Web3UserTransactionSchema = new mongoose.Schema({
     tokenId: {
         type: Number,
         required: true
+    },
+    note: {
+        type: String,
+        default: null
     }
 }, {
     timestamps: true,
