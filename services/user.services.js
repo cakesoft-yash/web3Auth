@@ -204,7 +204,7 @@ exports.getCredentials = async function (obj, user) {
     // const web3 = new Web3(Utils.networks[obj.chainId]);
     const web3 = new Web3(Utils.networks[80001]);
     let contractAddress; let membershipABI_JSON;
-    if (obj.membershipWithExpiry) {
+    if (user.membershipWithExpiry) {
       contractAddress = config.contractAddressWithExpiry;
       membershipABI_JSON = membershipWithExpiryABI;
     } else {
@@ -221,7 +221,7 @@ exports.getCredentials = async function (obj, user) {
         membershipStatus = response._membershipStatus;
         expiryTime = response._expiryTime;
       } else {
-        membershipStatus = response ? response : 'pending';
+        membershipStatus = response;
       }
       result.push(
         {
