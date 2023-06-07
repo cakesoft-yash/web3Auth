@@ -276,15 +276,37 @@ exports.createTransaction = async function (obj, adminUser) {
         }
       }
     );
-    if (obj.event === 'approved') {
-      await NotificationService.create(
-        {
-          _id: uuidv4(),
-          username: obj.username,
-          title: 'Membership Approved',
-          message: 'Your membership has been approved',
-        }
-      );
+    switch (obj.event) {
+      case 'approved':
+        await NotificationService.create(
+          {
+            _id: uuidv4(),
+            username: obj.username,
+            title: 'Membership Approved',
+            message: 'Your membership has been approved',
+          }
+        );
+        break;
+      case 'rejected':
+        await NotificationService.create(
+          {
+            _id: uuidv4(),
+            username: obj.username,
+            title: 'Membership Rejected',
+            message: obj.note || 'Your membership has been rejected',
+          }
+        );
+        break;
+      case 'suspended':
+        await NotificationService.create(
+          {
+            _id: uuidv4(),
+            username: obj.username,
+            title: 'Membership Suspended',
+            message: obj.note || 'Your membership has been suspended',
+          }
+        );
+        break;
     }
   }
   return {
