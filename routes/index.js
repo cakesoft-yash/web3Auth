@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router({ caseSensitive: true });
 
 const user = require('./user');
+const email = require('./email');
 const web2Auth = require('./web2Auth');
 const web3Auth = require('./web3Auth');
 
@@ -25,6 +26,7 @@ router.use('/reactNativeMessage', (req, res) => {
     </html>`);
 });
 router.use('/user', user);
+router.use('/email', email);
 router.use('/web2Auth', web2Auth);
 router.use('/web3Auth', web3Auth);
 

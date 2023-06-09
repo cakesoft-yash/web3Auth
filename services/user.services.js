@@ -169,7 +169,6 @@ exports.sendMessage = async function (obj, user) {
           },
           json: true
         }, function (err, httpResponse, response) {
-          console.log({ err, response });
           if (err) {
             reject(err);
             return;

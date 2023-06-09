@@ -1,6 +1,7 @@
 'use strict';
 const config = require('config');
 const CryptoJS = require('crypto-js');
+const nodemailer = require('nodemailer');
 
 function _getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -50,4 +51,28 @@ exports.decrypt = function (cipherText) {
 exports.networks = {
   // chainId : RPC URL
   80001: 'https://matic-mumbai.chainstacklabs.com' //for polygon testnet
+}
+
+exports.sendEmail = async function (to, from, subject, html, bcc = [], cc = []) {
+  var transporter = nodemailer.createTransport(config.nodemailer);
+  var mailOptions = {
+    from,
+    to,
+    subject,
+    html,
+    bcc,
+    cc
+  };
+  await new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log('sendEmail', error);
+        reject(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+        resolve(info);
+      }
+    });
+  });
+  return true;
 }

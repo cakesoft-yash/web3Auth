@@ -12,6 +12,19 @@
     "mongodb": {
         "url": ""
     },
+    "nodemailer": {
+        "port": 0,
+        "host": "",
+        "secure": false,
+        "tls": {
+            "rejectUnauthorized": false
+        },
+        "auth": {
+            "user": "",
+            "pass": ""
+        },
+        "from": ""
+    },
     "sendNotification": {
         "url": "",
         "token": ""
