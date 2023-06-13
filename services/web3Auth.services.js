@@ -130,7 +130,9 @@ exports.uploadData = async function (obj) {
 exports.connectWallet = async function (obj) {
   if (!obj.messageToSign) throw Error('Message is required');
   if (!obj.signature) throw Error('Signature is required');
+  if (!obj.walletAddress) throw Error('Wallet address is required');
   let userAddress = await ethers.utils.verifyMessage(obj.messageToSign, obj.signature);
+  if (userAddress !== obj.walletAddress) throw Error('Address mismatch');
   return {
     success: true,
     message: 'Wallet connected',
@@ -141,7 +143,9 @@ exports.connectWallet = async function (obj) {
 exports.verifySignMessage = async function (obj) {
   if (!obj.messageToSign) throw Error('Message is required');
   if (!obj.signature) throw Error('Signature is required');
+  if (!obj.walletAddress) throw Error('Wallet address is required');
   let userAddress = await ethers.utils.verifyMessage(obj.messageToSign, obj.signature);
+  if (userAddress !== obj.walletAddress) throw Error('Address mismatch');
   let result = await new Promise((resolve, reject) => {
     request.post({
       url: config.chatServer.loginWithWallet,
