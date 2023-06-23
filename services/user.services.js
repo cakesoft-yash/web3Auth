@@ -6,8 +6,8 @@ const chatUser = require('../models/chat.user.model');
 const Web3UserTransaction = require('../models/web3UserTransaction.model');
 const NotificationService = require('../services/notification.service');
 const Utils = require('../utils');
-const membershipABI = require('../contracts_abi/membership.json');
-const membershipWithExpiryABI = require('../contracts_abi/membershipExpiry.json');
+// const membershipABI = require('../contracts_abi/membership.json');
+// const membershipWithExpiryABI = require('../contracts_abi/membershipExpiry.json');
 
 exports.verifyToken = async function (token) {
   let user = await chatUser.findOne({ accessToken: token });
@@ -17,7 +17,7 @@ exports.verifyToken = async function (token) {
 
 exports.userDetail = async function (queryParams) {
   if (!queryParams.tokenId) throw Error('Token Id is required');
-  if (!queryParams.chainId) throw Error('Chain Id is required');
+  // if (!queryParams.chainId) throw Error('Chain Id is required');
   if (!queryParams.walletAddress) throw Error('WalletAddress is required');
   let user = await chatUser.findOne(
     {
@@ -31,32 +31,32 @@ exports.userDetail = async function (queryParams) {
       user: {}
     }
   }
-  const web3 = new Web3(Utils.networks[queryParams.chainId]);
-  let contractAddress; let membershipABI_JSON;
-  if (queryParams.membershipWithExpiry === 'true') {
-    contractAddress = config.contractAddressWithExpiry;
-    membershipABI_JSON = membershipWithExpiryABI;
-  } else {
-    contractAddress = config.contractAddress;
-    membershipABI_JSON = membershipABI;
-  }
-  const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
-  const response = await myContract.methods
-    .getMembershipStatus(queryParams.tokenId)
-    .call();
-  let membershipStatus; let expiryTime;
-  if (response._membershipStatus) {
-    membershipStatus = response._membershipStatus;
-    expiryTime = response._expiryTime;
-  } else {
-    membershipStatus = response ? response : 'pending';
-  }
+  // const web3 = new Web3(Utils.networks[queryParams.chainId]);
+  // let contractAddress; let membershipABI_JSON;
+  // if (queryParams.membershipWithExpiry === 'true') {
+  //   contractAddress = config.contractAddressWithExpiry;
+  //   membershipABI_JSON = membershipWithExpiryABI;
+  // } else {
+  //   contractAddress = config.contractAddress;
+  //   membershipABI_JSON = membershipABI;
+  // }
+  // const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
+  // const response = await myContract.methods
+  //   .getMembershipStatus(queryParams.tokenId)
+  //   .call();
+  // let membershipStatus; let expiryTime;
+  // if (response._membershipStatus) {
+  //   membershipStatus = response._membershipStatus;
+  //   expiryTime = response._expiryTime;
+  // } else {
+  //   membershipStatus = response ? response : 'pending';
+  // }
   return {
     success: true,
     userFound: true,
     user: {
-      expiryTime,
-      membershipStatus,
+      // expiryTime,
+      membershipStatus: user.membershipStatus,
       email: user.emails[0].address,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -119,24 +119,24 @@ exports.getUsers = async function (obj, user) {
     { $limit: pageLimit }
   ]);
   const web3 = new Web3(Utils.networks[obj.chainId]);
-  for (let index = 0; index < users.length; index++) {
-    const user = users[index];
-    let contractAddress; let membershipABI_JSON;
-    if (user.membershipWithExpiry) {
-      contractAddress = config.contractAddressWithExpiry;
-      membershipABI_JSON = membershipWithExpiryABI;
-      const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
-      const response = await myContract.methods
-        .getMembershipStatus(user.tokenId)
-        .call();
-      let membershipStatus; let expiryTime;
-      if (response._membershipStatus) {
-        membershipStatus = response._membershipStatus;
-        expiryTime = response._expiryTime;
-        Object.assign(user, { membershipStatus, expiryTime });
-      }
-    }
-  }
+  // for (let index = 0; index < users.length; index++) {
+  //   const user = users[index];
+  //   let contractAddress; let membershipABI_JSON;
+  //   if (user.membershipWithExpiry) {
+  //     contractAddress = config.contractAddressWithExpiry;
+  //     membershipABI_JSON = membershipWithExpiryABI;
+  //     const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
+  //     const response = await myContract.methods
+  //       .getMembershipStatus(user.tokenId)
+  //       .call();
+  //     let membershipStatus; let expiryTime;
+  //     if (response._membershipStatus) {
+  //       membershipStatus = response._membershipStatus;
+  //       expiryTime = response._expiryTime;
+  //       Object.assign(user, { membershipStatus, expiryTime });
+  //     }
+  //   }
+  // }
   let totalUsers = await chatUser.countDocuments(query);
   return {
     success: true,
@@ -200,39 +200,49 @@ exports.sendMessage = async function (obj, user) {
 exports.getCredentials = async function (obj, user) {
   let result = [];
   if (user.tokenId) {
-    // const web3 = new Web3(Utils.networks[obj.chainId]);
-    const web3 = new Web3(Utils.networks[80001]);
-    let contractAddress; let membershipABI_JSON;
-    if (user.membershipWithExpiry) {
-      contractAddress = config.contractAddressWithExpiry;
-      membershipABI_JSON = membershipWithExpiryABI;
-    } else {
-      contractAddress = config.contractAddress;
-      membershipABI_JSON = membershipABI;
-    }
-    const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
-    const response = await myContract.methods
-      .getMembershipStatus(user.tokenId)
-      .call();
-    if (response) {
-      let membershipStatus; let expiryTime;
-      if (response._membershipStatus) {
-        membershipStatus = response._membershipStatus;
-        expiryTime = response._expiryTime;
-      } else {
-        membershipStatus = response;
+    // // const web3 = new Web3(Utils.networks[obj.chainId]);
+    // const web3 = new Web3(Utils.networks[80001]);
+    // let contractAddress; let membershipABI_JSON;
+    // if (user.membershipWithExpiry) {
+    //   contractAddress = config.contractAddressWithExpiry;
+    //   membershipABI_JSON = membershipWithExpiryABI;
+    // } else {
+    //   contractAddress = config.contractAddress;
+    //   membershipABI_JSON = membershipABI;
+    // }
+    // const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
+    // const response = await myContract.methods
+    //   .getMembershipStatus(user.tokenId)
+    //   .call();
+    // if (response) {
+    //   let membershipStatus; let expiryTime;
+    //   if (response._membershipStatus) {
+    //     membershipStatus = response._membershipStatus;
+    //     expiryTime = response._expiryTime;
+    //   } else {
+    //     membershipStatus = response;
+    //   }
+    //   result.push(
+    //     {
+    //       communityName: user.loggedInApp,
+    //       membershipStatus,
+    //       expiryTime,
+    //       name: 'Membership Credential',
+    //       membershipDuration: response === 'pending' ? 'pending' : 'Forever',
+    //       membershipCount: response === 'pending' ? 'pending' : 'Unlimited',
+    //     }
+    //   );
+    // }
+    result.push(
+      {
+        communityName: user.loggedInApp,
+        membershipStatus: user.membershipStatus,
+        expiryTime: 0,
+        name: 'Membership Credential',
+        membershipDuration: user.membershipStatus === 'pending' ? 'pending' : 'Forever',
+        membershipCount: user.membershipStatus === 'pending' ? 'pending' : 'Unlimited',
       }
-      result.push(
-        {
-          communityName: user.loggedInApp,
-          membershipStatus,
-          expiryTime,
-          name: 'Membership Credential',
-          membershipDuration: response === 'pending' ? 'pending' : 'Forever',
-          membershipCount: response === 'pending' ? 'pending' : 'Unlimited',
-        }
-      );
-    }
+    );
   }
   return {
     success: true,

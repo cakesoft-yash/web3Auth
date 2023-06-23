@@ -1,7 +1,10 @@
 const config = require('config');
 const ethers = require('ethers');
 const request = require('request');
+const { v4: uuidv4 } = require('uuid');
 const IPFS = import('ipfs-http-client');
+const Utils = require('../utils');
+const UserKeyShare = require('../models/userKeyShare.model');
 const UserService = require('../services/user.services');
 
 exports.getSignMessage = async function () {
@@ -127,6 +130,84 @@ exports.uploadData = async function (obj) {
   };
 }
 
+exports.setPassword = async function (obj) {
+  if (!obj.email) throw Error('Email is required');
+  if (!obj.password) throw Error('Password is required');
+  if (!obj.confirmPassword) throw Error('Confirm password is required');
+  if (obj.password !== obj.confirmPassword) throw Error('Password mismatch');
+  const hashPassword = await Utils.hashPassword(obj.password);
+  let userKeyShare = await UserKeyShare.findOne(
+    {
+      email: obj.email
+    }
+  );
+  if (userKeyShare) {
+    await UserKeyShare.findOneAndUpdate(
+      {
+        email: obj.email
+      },
+      {
+        $set: {
+          email: obj.email,
+          password: hashPassword,
+        }
+      }
+    );
+  } else {
+    await UserKeyShare.create(
+      {
+        _id: uuidv4(),
+        email: obj.email,
+        password: hashPassword,
+      }
+    );
+  }
+  return {
+    success: true,
+    message: 'Password set successfully'
+  };
+}
+
+exports.verifyPassword = async function (obj) {
+  if (!obj.email) throw Error('Email is required');
+  if (!obj.password) throw Error('Password is required');
+  let userKeyShare = await UserKeyShare.findOne(
+    {
+      email: obj.email
+    }
+  );
+  let verifyPassword = await Utils.verifyPassword(obj.password, userKeyShare.password);
+  if (!verifyPassword) throw Error('Invalid password');
+  return {
+    success: true,
+    message: 'Password verified successfully',
+    keyShare2: userKeyShare.keyShare2
+  };
+}
+
+exports.loginWithEmail = async function (obj) {
+  if (!obj.walletAddress) throw Error('Wallet address is required');
+  let result = await new Promise((resolve, reject) => {
+    request.post({
+      url: config.chatServer.loginWithWallet,
+      body: {
+        walletAddress: obj.walletAddress,
+        loggedInApp: 'zti'
+      },
+      json: true
+    }, function (err, httpResponse, response) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      if (!response.success) reject(response);
+      resolve(response);
+    });
+  });
+  Object.assign(result, { walletAddress: obj.walletAddress });
+  return result;
+}
+
 exports.connectWallet = async function (obj) {
   if (!obj.messageToSign) throw Error('Message is required');
   if (!obj.signature) throw Error('Signature is required');
@@ -165,4 +246,28 @@ exports.verifySignMessage = async function (obj) {
   });
   Object.assign(result, { walletAddress: userAddress });
   return result;
+}
+
+
+exports.registerPrivateKey = async function (obj) {
+  if (!obj.email) throw Error('Email is required');
+  if (!obj.walletAddress) throw Error('WalletAddress is required');
+  if (!obj.keyShare1) throw Error('KeyShare is required');
+  if (!obj.keyShare2) throw Error('keyShare is required');
+  await UserKeyShare.findOneAndUpdate(
+    {
+      email: obj.email
+    },
+    {
+      $set: {
+        walletAddress: obj.walletAddress,
+        keyShare1: obj.keyShare1,
+        keyShare2: obj.keyShare2
+      }
+    }
+  );
+  return {
+    success: true,
+    message: 'Key registered successfully'
+  };
 }

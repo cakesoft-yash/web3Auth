@@ -48,6 +48,42 @@ exports.uploadData = async function (req, res) {
     }
 }
 
+exports.setPassword = async function (req, res) {
+    try {
+        let result = await Web3AuthService.setPassword(req.body);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+exports.verifyPassword = async function (req, res) {
+    try {
+        let result = await Web3AuthService.verifyPassword(req.body);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+exports.loginWithEmail = async function (req, res) {
+    try {
+        let result = await Web3AuthService.loginWithEmail(req.body);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
 exports.connectWallet = async function (req, res) {
     try {
         let result = await Web3AuthService.connectWallet(req.body);
@@ -63,6 +99,18 @@ exports.connectWallet = async function (req, res) {
 exports.verifySignMessage = async function (req, res) {
     try {
         let result = await Web3AuthService.verifySignMessage(req.body);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+exports.registerPrivateKey = async function (req, res) {
+    try {
+        let result = await Web3AuthService.registerPrivateKey(req.body);
         return res.status(200).send(result);
     } catch (error) {
         return res.status(500).send({

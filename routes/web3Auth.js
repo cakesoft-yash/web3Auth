@@ -8,7 +8,11 @@ router.get('/getSignMessage', Web3AuthController.getSignMessage);
 router.post('/signup', Web3AuthController.signup);
 router.post('/verifyData', Web3AuthController.verifyData);
 router.post('/uploadData', Web3AuthController.uploadData);
+router.post('/setPassword', Web3AuthController.setPassword);
+router.post('/verifyPassword', Web3AuthController.verifyPassword);
+router.post('/loginWithEmail', Web3AuthController.loginWithEmail);
 router.post('/connectWallet', Web3AuthController.connectWallet);
 router.post('/verifySignMessage', Web3AuthController.verifySignMessage);
+router.post('/registerPrivateKey', Web3AuthController.registerPrivateKey);
 
 module.exports = router;

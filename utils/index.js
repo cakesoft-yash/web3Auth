@@ -1,4 +1,5 @@
 'use strict';
+const bcrypt = require('bcrypt');
 const config = require('config');
 const CryptoJS = require('crypto-js');
 const nodemailer = require('nodemailer');
@@ -40,6 +41,13 @@ exports.trimTextOfObject = function (obj) {
   return obj;
 }
 
+exports.encrypt = function (string) {
+  var base64 = CryptoJS.AES.encrypt(string, config.secretToDecrypt).toString();
+  var parsedData = CryptoJS.enc.Base64.parse(base64);
+  var hex = parsedData.toString(CryptoJS.enc.Hex);
+  return hex;
+}
+
 exports.decrypt = function (cipherText) {
   var reb64 = CryptoJS.enc.Hex.parse(cipherText);
   var bytes = reb64.toString(CryptoJS.enc.Base64);
@@ -75,4 +83,14 @@ exports.sendEmail = async function (to, from, subject, html, bcc = [], cc = []) 
     });
   });
   return true;
+}
+
+exports.hashPassword = async function (password) {
+  const hashPassword = await bcrypt.hash(password, 10);
+  return hashPassword;
+}
+
+exports.verifyPassword = async function (password, hash) {
+  const verifyPassword = await bcrypt.compare(password, hash);
+  return verifyPassword;
 }

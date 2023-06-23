@@ -2,6 +2,8 @@ const config = require('config');
 const { v4: uuidv4 } = require('uuid');
 const Utils = require('../utils');
 const Otp = require('../models/otp.model');
+const ChatUser = require('../models/chat.user.model');
+const UserKeyShare = require('../models/userKeyShare.model');
 
 exports.sendOTP = async function (obj) {
   if (!obj.email) throw Error('Email is required');
@@ -204,8 +206,40 @@ exports.verifyOTP = async function (obj) {
       }
     }
   );
+  let privateKeyCreated = false; let walletAddress; let keyShare1; let keyShare2;
+  let userKeyShare;
+  switch (obj.verifyOTPFrom) {
+    case 'signup':
+      userKeyShare = await UserKeyShare.findOne(
+        {
+          email: obj.email
+        }
+      );
+      if (userKeyShare) {
+        privateKeyCreated = true;
+        walletAddress = userKeyShare.walletAddress;
+        keyShare1 = userKeyShare.keyShare1;
+        keyShare2 = userKeyShare.keyShare2;
+      }
+      break;
+    case 'login':
+      userKeyShare = await UserKeyShare.findOne(
+        {
+          email: obj.email
+        }
+      );
+      if (userKeyShare) {
+        privateKeyCreated = true;
+        keyShare1 = userKeyShare.keyShare1;
+      }
+      break;
+  }
   return {
     success: true,
+    privateKeyCreated,
+    walletAddress,
+    keyShare1,
+    keyShare2,
     message: 'Otp verified successfully'
   };
 }
