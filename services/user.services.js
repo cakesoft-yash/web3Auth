@@ -266,13 +266,19 @@ exports.getTransactions = async function (obj, user) {
 }
 
 exports.createTransaction = async function (obj, adminUser) {
-  if (!obj.transactionId) throw Error('TransactionId is required');
   if (!obj.walletAddress) throw Error('WalletAddress is required');
   if (!obj.date) throw Error('Date is required');
   if (!obj.event) throw Error('Event is required');
   if (!obj.tokenId) throw Error('TokenId is required');
   if (obj.note) Object.assign(obj, { note: obj.note });
-  Object.assign(obj, { _id: uuidv4() });
+  Object.assign(obj,
+    {
+      _id: uuidv4(),
+      transactionId: obj.transactionId
+        ? obj.transactionId
+        : null
+    }
+  );
   await Web3UserTransaction.create(obj);
   if (obj.updateMembershipStatus) {
     await chatUser.findOneAndUpdate(

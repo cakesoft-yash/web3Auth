@@ -8,7 +8,7 @@ const Web3UserTransactionSchema = new mongoose.Schema({
     },
     transactionId: {
         type: String,
-        required: true
+        default: null
     },
     walletAddress: {
         type: String,
