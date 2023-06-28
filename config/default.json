@@ -43,5 +43,9 @@
     },
     "contractAddress": "",
     "contractAddressWithExpiry": "",
-    "secretToDecrypt": ""
+    "secretToDecrypt": "",
+    "dicountNFTImage": {
+        "path": "",
+        "url": ""
+    }
 }
