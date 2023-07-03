@@ -2,12 +2,18 @@ const config = require('config');
 const { v4: uuidv4 } = require('uuid');
 const Utils = require('../utils');
 const Otp = require('../models/otp.model');
-const ChatUser = require('../models/chat.user.model');
 const UserKeyShare = require('../models/userKeyShare.model');
+const MarketplaceGlobal = require('../models/marketplaceGlobal.model');
 
 exports.sendOTP = async function (obj) {
   if (!obj.email) throw Error('Email is required');
-  let otp = await Utils.getUid(6, 'numeric');
+  let globalData = await MarketplaceGlobal.findOne(
+    {
+      type: 'defaultEmailLogin'
+    }
+  );
+  let email = await globalData.customFields.find(customField => customField.email === obj.email);
+  let otp = email ? email.otp : await Utils.getUid(6, 'numeric');
   let otpExpiryTime = new Date();
   otpExpiryTime.setMinutes(otpExpiryTime.getMinutes() + 15);
   let oldOtp = await Otp.findOne(
@@ -34,7 +40,8 @@ exports.sendOTP = async function (obj) {
       }
     );
   }
-  let body = `<!DOCTYPE html>
+  if (!email) {
+    let body = `<!DOCTYPE html>
     <html>
     <head>
         <title></title>
@@ -178,7 +185,8 @@ exports.sendOTP = async function (obj) {
         </table>
     </body>
     </html>`;
-  await Utils.sendEmail(obj.email, config.nodemailer.from, 'One Time Password(OTP) for verification', body);
+    await Utils.sendEmail(obj.email, config.nodemailer.from, 'One Time Password(OTP) for verification', body);
+  }
   return {
     success: true,
     message: 'OTP sent successfully'
