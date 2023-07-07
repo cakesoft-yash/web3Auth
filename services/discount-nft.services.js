@@ -87,9 +87,7 @@ exports.buyNFT = async function (obj) {
 }
 
 exports.listForApp = async function (obj) {
-  let page = parseInt(obj.page) || 0;
-  let pageLimit = parseInt(obj.pageLimit) || 10;
-  page = page > 1 ? page - 1 : 0;
+  if (!obj.walletAddress) throw Error('Wallet address is required');
   let discountNFTs = await DiscountNFT
     .find(
       { isRemoved: false },
@@ -102,15 +100,35 @@ exports.listForApp = async function (obj) {
         numberOfRedemptions: 1,
         unlimitedCount: 1
       }
-    )
-    .sort({ createdAt: -1 })
-    .skip(page * pageLimit)
-    .limit(pageLimit);
-  let totalDiscountNFTs = await DiscountNFT.countDocuments({ isRemoved: false });
+    ).sort({ createdAt: -1 });
+  let purchasedNFTs = await DiscountNFT
+    .find(
+      {
+        isRemoved: false,
+        purchasedBy: obj.walletAddress
+      },
+      {
+        code: 1,
+        name: 1,
+        expiry: 1,
+        image: 1,
+        amount: 1,
+        description: 1,
+        numberOfRedemptions: 1,
+        unlimitedCount: 1
+      }
+    ).sort({ createdAt: -1 });
   return {
     success: true,
-    totalDiscountNFTs,
-    pages: Math.ceil(totalDiscountNFTs / pageLimit),
-    discountNFTs
+    coupon: [
+      {
+        title: 'Available Coupon',
+        data: discountNFTs,
+      },
+      {
+        title: 'Purchased Coupon',
+        data: purchasedNFTs,
+      },
+    ]
   };
 }
