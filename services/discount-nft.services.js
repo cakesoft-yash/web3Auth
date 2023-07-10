@@ -11,11 +11,12 @@ exports.list = async function (obj) {
       { isRemoved: false },
       {
         name: 1,
+        price: 1,
         code: 1,
         expiry: 1,
         image: 1,
-        amount: 1,
         description: 1,
+        discount_amount: 1,
         numberOfRedemptions: 1,
         unlimitedCount: 1
       }
@@ -36,10 +37,11 @@ exports.create = async function (obj, file) {
   if (!file) throw Error('Select the file');
   if (!obj.name) throw Error('Name is required');
   if (!obj.code) throw Error('Code is required');
+  if (!obj.price) throw Error('Price is required');
   if (!obj.expiry) throw Error('Expiry is required');
-  if (!obj.amount) throw Error('Amount is required');
   if (!obj.description) throw Error('Description is required');
   if (!obj.transactionId) throw Error('Transaction id is required');
+  if (!obj.discount_amount) throw Error('Discount amount is required');
   if (!obj.numberOfRedemptions) throw Error('Number of redemptions is required');
   if (!obj.tokenId) throw Error('tokenId is required');
   if (!obj.unlimitedCount) throw Error('UnlimitedCount is required');
@@ -93,10 +95,11 @@ exports.listForApp = async function (obj) {
       { isRemoved: false },
       {
         name: 1,
+        price: 1,
         expiry: 1,
         image: 1,
-        amount: 1,
         description: 1,
+        discount_amount: 1,
         numberOfRedemptions: 1,
         unlimitedCount: 1
       }
@@ -110,10 +113,11 @@ exports.listForApp = async function (obj) {
       {
         code: 1,
         name: 1,
+        price: 1,
         expiry: 1,
         image: 1,
-        amount: 1,
         description: 1,
+        discount_amount: 1,
         numberOfRedemptions: 1,
         unlimitedCount: 1
       }

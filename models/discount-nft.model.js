@@ -26,7 +26,10 @@ const DiscountNFTSchema = new mongoose.Schema({
     image: {
         type: String
     },
-    amount: {
+    discount_amount: {
+        type: Number
+    },
+    price: {
         type: Number
     },
     description: {
