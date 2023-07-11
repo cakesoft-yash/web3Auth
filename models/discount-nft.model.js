@@ -43,12 +43,16 @@ const DiscountNFTSchema = new mongoose.Schema({
     },
     purchasedBy: [
         {
-            type: String
-        }
-    ],
-    usedBy: [
-        {
-            type: String
+            _id: {
+                type: String
+            },
+            walletAddress: {
+                type: String
+            },
+            isUsed: {
+                type: Boolean,
+                default: false
+            }
         }
     ],
     unlimitedCount: {

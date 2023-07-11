@@ -65,7 +65,7 @@ exports.buyNFT = async function (obj) {
   if (!obj.discountNFTId) throw Error('DiscountNFT Id is required');
   let discountNFT = await DiscountNFT.findById(obj.discountNFTId);
   if (!discountNFT) throw Error('NFT not found');
-  if (discountNFT.purchasedBy.find(address => address === obj.walletAddress)) throw Error('NFT purchased already');
+  if (discountNFT.purchasedBy.find(address => address.walletAddress === obj.walletAddress)) throw Error('NFT purchased already');
   let expDate = new Date(discountNFT.expiry);
   let expiry = new Date(expDate.setMinutes(expDate.getMinutes() - discountNFT.timezoneOffset));
   let date = new Date();
@@ -77,8 +77,11 @@ exports.buyNFT = async function (obj) {
   }
   await DiscountNFT.findByIdAndUpdate(obj.discountNFTId,
     {
-      $addToSet: {
-        purchasedBy: obj.walletAddress
+      $push: {
+        purchasedBy: {
+          _id: uuidv4(),
+          walletAddress: obj.walletAddress
+        }
       }
     }
   );
@@ -104,24 +107,37 @@ exports.listForApp = async function (obj) {
         unlimitedCount: 1
       }
     ).sort({ createdAt: -1 });
-  let purchasedNFTs = await DiscountNFT
-    .find(
-      {
+  let purchasedNFTs = await DiscountNFT.aggregate([
+    {
+      $match: {
         isRemoved: false,
-        purchasedBy: obj.walletAddress
-      },
-      {
+        'purchasedBy.walletAddress': obj.walletAddress
+      }
+    },
+    { $unwind: '$purchasedBy' },
+    {
+      $match: {
+        'purchasedBy.walletAddress': obj.walletAddress
+      }
+    },
+    {
+      $sort: { createdAt: -1 }
+    },
+    {
+      $project: {
         code: 1,
         name: 1,
         price: 1,
         expiry: 1,
         image: 1,
+        purchasedBy: 1,
         description: 1,
         discount_amount: 1,
         numberOfRedemptions: 1,
         unlimitedCount: 1
       }
-    ).sort({ createdAt: -1 });
+    }
+  ]);
   return {
     success: true,
     coupon: [
