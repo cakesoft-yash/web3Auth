@@ -91,8 +91,7 @@ exports.buyNFT = async function (obj) {
   };
 }
 
-exports.listForApp = async function (obj) {
-  if (!obj.walletAddress) throw Error('Wallet address is required');
+exports.available = async function (obj) {
   let discountNFTs = await DiscountNFT
     .find(
       { isRemoved: false },
@@ -107,6 +106,14 @@ exports.listForApp = async function (obj) {
         unlimitedCount: 1
       }
     ).sort({ createdAt: -1 });
+  return {
+    success: true,
+    availableCoupons: discountNFTs
+  };
+}
+
+exports.purchased = async function (obj) {
+  if (!obj.walletAddress) throw Error('Wallet address is required');
   let purchasedNFTs = await DiscountNFT.aggregate([
     {
       $match: {
@@ -141,15 +148,6 @@ exports.listForApp = async function (obj) {
   ]);
   return {
     success: true,
-    coupon: [
-      {
-        title: 'Available Coupon',
-        data: discountNFTs,
-      },
-      {
-        title: 'Purchased Coupon',
-        data: purchasedNFTs,
-      },
-    ]
+    purchasedCoupons: purchasedNFTs
   };
 }

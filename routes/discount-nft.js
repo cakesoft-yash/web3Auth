@@ -26,6 +26,7 @@ router.post('/list', AuthController.verifyTokenForAdmin, DiscountNFTController.l
 router.post('/create', [AuthController.verifyTokenForAdmin, upload.single('dicountNFTImage')], DiscountNFTController.create);
 
 router.post('/buy', AuthController.verifyTokenForUser, DiscountNFTController.buyNFT);
-router.post('/v1/list', AuthController.verifyTokenForUser, DiscountNFTController.listForApp);
+router.post('/available', AuthController.verifyTokenForUser, DiscountNFTController.available);
+router.post('/purchased', AuthController.verifyTokenForUser, DiscountNFTController.purchased);
 
 module.exports = router;

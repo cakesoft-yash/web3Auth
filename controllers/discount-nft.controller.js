@@ -36,9 +36,21 @@ exports.buyNFT = async function (req, res) {
     }
 }
 
-exports.listForApp = async function (req, res) {
+exports.available = async function (req, res) {
     try {
-        let result = await DiscountNFTService.listForApp(req.body);
+        let result = await DiscountNFTService.available(req.body);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+exports.purchased = async function (req, res) {
+    try {
+        let result = await DiscountNFTService.purchased(req.body);
         return res.status(200).send(result);
     } catch (error) {
         return res.status(500).send({
