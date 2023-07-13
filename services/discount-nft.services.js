@@ -117,6 +117,7 @@ exports.listForApp = async function (obj) {
     { $unwind: '$purchasedBy' },
     {
       $match: {
+        'purchasedBy.isUsed': false,
         'purchasedBy.walletAddress': obj.walletAddress
       }
     },
