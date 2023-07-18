@@ -35,6 +35,7 @@ exports.list = async function (obj) {
 
 exports.create = async function (obj, file) {
   if (!file) throw Error('Select the file');
+  if (!obj.appName) throw Error('App Name is required');
   if (!obj.name) throw Error('Name is required');
   if (!obj.code) throw Error('Code is required');
   if (!obj.price) throw Error('Price is required');

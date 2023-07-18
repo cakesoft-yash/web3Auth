@@ -64,6 +64,9 @@ const DiscountNFTSchema = new mongoose.Schema({
     },
     timezoneOffset: {
         type: Number
+    },
+    appName: {
+        type: String
     }
 }, {
     timestamps: true,
