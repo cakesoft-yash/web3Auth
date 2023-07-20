@@ -68,7 +68,16 @@ const AdminSchema = new mongoose.Schema({
     ],
     chatUsername: {
         type: String
-    }
+    },
+    publicAddress: {
+        type: String
+    },
+    keyShare1: {
+        type: String
+    },
+    keyShare2: {
+        type: String
+    },
 }, {
     timestamps: true,
     toObject: {

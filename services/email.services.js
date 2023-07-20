@@ -2,6 +2,7 @@ const config = require('config');
 const { v4: uuidv4 } = require('uuid');
 const Utils = require('../utils');
 const Otp = require('../models/otp.model');
+const Admin = require('../models/admin.model');
 const UserKeyShare = require('../models/userKeyShare.model');
 const MarketplaceGlobal = require('../models/marketplaceGlobal.model');
 
@@ -241,6 +242,20 @@ exports.verifyOTP = async function (obj) {
         keyShare1 = userKeyShare.keyShare1;
       }
       break;
+  }
+  if (obj.publicAddress) {
+    if (!obj.adminId) throw Error('Admin Id is required');
+    if (!obj.keyShare1) throw Error('KeyShare is required');
+    if (!obj.keyShare2) throw Error('KeyShare is required');
+    await Admin.findByIdAndUpdate(obj.adminId,
+      {
+        $set: {
+          publicAddress: obj.publicAddress,
+          keyShare1: obj.keyShare1,
+          keyShare2: obj.keyShare2,
+        }
+      }
+    );
   }
   return {
     success: true,
