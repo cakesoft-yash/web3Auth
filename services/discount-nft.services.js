@@ -3,12 +3,16 @@ const { v4: uuidv4 } = require('uuid');
 const DiscountNFT = require('../models/discount-nft.model');
 
 exports.list = async function (obj) {
+  if (!obj.userId) throw Error('User Id is required');
   let page = parseInt(obj.page) || 0;
   let pageLimit = parseInt(obj.pageLimit) || 10;
   page = page > 1 ? page - 1 : 0;
   let discountNFTs = await DiscountNFT
     .find(
-      { isRemoved: false },
+      {
+        isRemoved: false,
+        userId: obj.userId
+      },
       {
         name: 1,
         price: 1,
@@ -24,7 +28,7 @@ exports.list = async function (obj) {
     .sort({ createdAt: -1 })
     .skip(page * pageLimit)
     .limit(pageLimit);
-  let totalDiscountNFTs = await DiscountNFT.countDocuments({ isRemoved: false });
+  let totalDiscountNFTs = await DiscountNFT.countDocuments({ isRemoved: false, userId: obj.userId });
   return {
     success: true,
     totalDiscountNFTs,
@@ -35,6 +39,7 @@ exports.list = async function (obj) {
 
 exports.create = async function (obj, file) {
   if (!file) throw Error('Select the file');
+  if (!obj.userId) throw Error('User Id is required');
   if (!obj.appName) throw Error('App Name is required');
   if (!obj.name) throw Error('Name is required');
   if (!obj.code) throw Error('Code is required');
