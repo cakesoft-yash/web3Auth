@@ -2,6 +2,7 @@ const config = require('config');
 const { v4: uuidv4 } = require('uuid');
 const Utils = require('../utils');
 const Otp = require('../models/otp.model');
+const Shop = require('../models/shop.model');
 const Admin = require('../models/admin.model');
 const UserKeyShare = require('../models/userKeyShare.model');
 const MarketplaceGlobal = require('../models/marketplaceGlobal.model');
@@ -244,18 +245,35 @@ exports.verifyOTP = async function (obj) {
       break;
   }
   if (obj.publicAddress) {
-    if (!obj.adminId) throw Error('Admin Id is required');
+    if (!obj.loginFor) throw Error('Login for is required');
     if (!obj.keyShare1) throw Error('KeyShare is required');
     if (!obj.keyShare2) throw Error('KeyShare is required');
-    await Admin.findByIdAndUpdate(obj.adminId,
-      {
-        $set: {
-          publicAddress: obj.publicAddress,
-          keyShare1: obj.keyShare1,
-          keyShare2: obj.keyShare2,
-        }
-      }
-    );
+    switch (obj.loginFor) {
+      case "shop":
+        if (!obj.shopId) throw Error('Shop Id is required');
+        await Shop.findByIdAndUpdate(obj.shopId,
+          {
+            $set: {
+              publicAddress: obj.publicAddress,
+              keyShare1: obj.keyShare1,
+              keyShare2: obj.keyShare2,
+            }
+          }
+        );
+        break;
+      case "admin":
+        if (!obj.adminId) throw Error('Admin Id is required');
+        await Admin.findByIdAndUpdate(obj.adminId,
+          {
+            $set: {
+              publicAddress: obj.publicAddress,
+              keyShare1: obj.keyShare1,
+              keyShare2: obj.keyShare2,
+            }
+          }
+        );
+        break;
+    }
   }
   return {
     success: true,

@@ -25,6 +25,9 @@ let upload = multer({ storage: storage });
 router.post('/list', AuthController.verifyTokenForAdmin, DiscountNFTController.list);
 router.post('/create', [AuthController.verifyTokenForAdmin, upload.single('dicountNFTImage')], DiscountNFTController.create);
 
+router.post('/listForshop', AuthController.verifyTokenForShop, DiscountNFTController.list);
+router.post('/createForShop', [AuthController.verifyTokenForShop, upload.single('dicountNFTImage')], DiscountNFTController.create);
+
 router.post('/buy', AuthController.verifyTokenForUser, DiscountNFTController.buyNFT);
 router.post('/available', AuthController.verifyTokenForUser, DiscountNFTController.available);
 router.post('/purchased', AuthController.verifyTokenForUser, DiscountNFTController.purchased);

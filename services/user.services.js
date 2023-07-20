@@ -2,12 +2,33 @@ const Web3 = require('web3');
 const config = require('config');
 const request = require('request');
 const { v4: uuidv4 } = require('uuid');
+const Shop = require('../models/shop.model');
 const chatUser = require('../models/chat.user.model');
 const Web3UserTransaction = require('../models/web3UserTransaction.model');
 const NotificationService = require('../services/notification.service');
 const Utils = require('../utils');
 // const membershipABI = require('../contracts_abi/membership.json');
 // const membershipWithExpiryABI = require('../contracts_abi/membershipExpiry.json');
+
+exports.getShopByToken = async function (token) {
+  const shop = await Shop.findOne({ 'tokens.token': token });
+  if (!shop) return false;
+  let verifiedToken = shop.tokens.find(shopToken => shopToken.token == token);
+  if (new Date().getTime() > new Date(verifiedToken.tokenExpiryTime).getTime()) {
+    await Shop.findByIdAndUpdate(shop._id,
+      {
+        $pull: {
+          tokens: { token }
+        }
+      },
+      {
+        new: true
+      }
+    );
+    return false;
+  }
+  return shop;
+}
 
 exports.verifyToken = async function (token) {
   let user = await chatUser.findOne({ accessToken: token });
