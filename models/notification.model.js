@@ -17,7 +17,12 @@ const NotificationSchema = new mongoose.Schema({
         type: String
     },
     type: {
-        type: String
+        type: String,
+        default: null
+    },
+    note: {
+        type: String,
+        default: null
     },
     status: {
         type: String,

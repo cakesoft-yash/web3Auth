@@ -37,7 +37,8 @@ exports.send = async function () {
                             title: notification.title,
                             message: notification.message,
                             payload: {
-                                type: notification.type
+                                type: notification.type,
+                                note: notification.note
                             }
                         },
                         json: true
