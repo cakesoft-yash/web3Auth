@@ -207,6 +207,7 @@ exports.sendMessage = async function (obj, user) {
         {
           _id: uuidv4(),
           username: obj.toUsername,
+          type: 'Message',
           title: 'Notification',
           message: obj.message,
         }
@@ -318,6 +319,7 @@ exports.createTransaction = async function (obj, adminUser) {
           {
             _id: uuidv4(),
             username: obj.username,
+            type: 'MembershipAppeal',
             title: 'Membership Approved',
             message: 'Your membership has been approved',
           }
@@ -328,6 +330,7 @@ exports.createTransaction = async function (obj, adminUser) {
           {
             _id: uuidv4(),
             username: obj.username,
+            type: 'MembershipAppeal',
             title: 'Membership Rejected',
             message: obj.note || 'Your membership has been rejected',
           }
@@ -338,6 +341,7 @@ exports.createTransaction = async function (obj, adminUser) {
           {
             _id: uuidv4(),
             username: obj.username,
+            type: 'MembershipAppeal',
             title: 'Membership Suspended',
             message: obj.note || 'Your membership has been suspended',
           }
