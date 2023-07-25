@@ -47,7 +47,20 @@ const UserSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date
-    }
+    },
+    membershipAppeal: [
+        {
+            _id: {
+                type: String
+            },
+            document: {
+                type: String
+            },
+            additional_information: {
+                type: String
+            }
+        }
+    ]
 });
 
 const User = chatDbConnection.model('User', UserSchema);

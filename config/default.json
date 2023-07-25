@@ -47,5 +47,9 @@
     "dicountNFTImage": {
         "path": "",
         "url": ""
+    },
+    "user": {
+        "documentPath": "",
+        "documentURL": ""
     }
 }

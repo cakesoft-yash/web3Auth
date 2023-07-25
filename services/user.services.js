@@ -3,7 +3,7 @@ const config = require('config');
 const request = require('request');
 const { v4: uuidv4 } = require('uuid');
 const Shop = require('../models/shop.model');
-const chatUser = require('../models/chat.user.model');
+const ChatUser = require('../models/chat.user.model');
 const Web3UserTransaction = require('../models/web3UserTransaction.model');
 const NotificationService = require('../services/notification.service');
 const Utils = require('../utils');
@@ -31,7 +31,7 @@ exports.getShopByToken = async function (token) {
 }
 
 exports.verifyToken = async function (token) {
-  let user = await chatUser.findOne({ accessToken: token });
+  let user = await ChatUser.findOne({ accessToken: token });
   if (!user) throw Error('Unauthorized');
   return user;
 }
@@ -40,7 +40,7 @@ exports.userDetail = async function (queryParams) {
   if (!queryParams.tokenId) throw Error('Token Id is required');
   // if (!queryParams.chainId) throw Error('Chain Id is required');
   if (!queryParams.walletAddress) throw Error('WalletAddress is required');
-  let user = await chatUser.findOne(
+  let user = await ChatUser.findOne(
     {
       walletAddress: queryParams.walletAddress
     }
@@ -91,7 +91,7 @@ exports.userDetail = async function (queryParams) {
 
 exports.getTokenId = async function (queryParams) {
   if (!queryParams.walletAddress) throw Error('WalletAddress is required');
-  let user = await chatUser.findOne(
+  let user = await ChatUser.findOne(
     {
       walletAddress: queryParams.walletAddress
     }
@@ -118,7 +118,7 @@ exports.getUsers = async function (obj, user) {
       membershipStatus: obj.membershipStatus
     }
   );
-  let users = await chatUser.aggregate([
+  let users = await ChatUser.aggregate([
     { $match: query },
     {
       $project: {
@@ -132,7 +132,8 @@ exports.getUsers = async function (obj, user) {
         tokenId: 1,
         membershipWithExpiry: 1,
         membershipStatus: 1,
-        createdAt: 1
+        createdAt: 1,
+        membershipAppeal: 1
       }
     },
     { $sort: { createdAt: -1 } },
@@ -158,7 +159,7 @@ exports.getUsers = async function (obj, user) {
   //     }
   //   }
   // }
-  let totalUsers = await chatUser.countDocuments(query);
+  let totalUsers = await ChatUser.countDocuments(query);
   return {
     success: true,
     totalUsers,
@@ -173,7 +174,7 @@ exports.sendMessage = async function (obj, user) {
   if (!obj.toUsername) throw Error('To username is required');
   switch (obj.messageType) {
     case 'chat':
-      let chatUserData = await chatUser.findOne(
+      let chatUserData = await ChatUser.findOne(
         {
           username: user.chatUsername
         }
@@ -303,7 +304,7 @@ exports.createTransaction = async function (obj, adminUser) {
   );
   await Web3UserTransaction.create(obj);
   if (obj.updateMembershipStatus) {
-    await chatUser.findOneAndUpdate(
+    await ChatUser.findOneAndUpdate(
       {
         tokenId: obj.tokenId
       },
@@ -352,5 +353,27 @@ exports.createTransaction = async function (obj, adminUser) {
   }
   return {
     success: true
+  };
+}
+
+exports.createMembershipAppeal = async function (obj, file, user) {
+  if (!file) throw Error('Select the file');
+  await ChatUser.findOneAndUpdate(
+    {
+      username: user.username
+    },
+    {
+      $push: {
+        membershipAppeal: {
+          _id: uuidv4(),
+          document: `${config.user.documentURL}/${file.filename}`,
+          additional_information: obj.additional_information || null
+        }
+      }
+    }
+  );
+  return {
+    success: true,
+    message: 'Membership appeal created successfully'
   };
 }
