@@ -118,6 +118,19 @@ exports.getUsers = async function (obj, user) {
       membershipStatus: obj.membershipStatus
     }
   );
+  if (obj.search) Object.assign(query,
+    {
+      $or: [
+        { firstName: new RegExp(obj.search, 'i') },
+        { lastName: new RegExp(obj.search, 'i') },
+        { walletAddress: new RegExp(obj.search, 'i') },
+        { phone: new RegExp(obj.search, 'i') },
+        { username: new RegExp(obj.search, 'i') },
+        { displayUsername: new RegExp(obj.search, 'i') },
+        { 'emails.address': new RegExp(obj.search, 'i') },
+      ]
+    }
+  );
   let users = await ChatUser.aggregate([
     { $match: query },
     {
