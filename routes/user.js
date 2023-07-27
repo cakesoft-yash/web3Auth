@@ -19,7 +19,13 @@ let storage = multer.diskStorage({
         cb(null, new Date().getTime() + '_' + file.originalname);
     }
 })
-let upload = multer({ storage: storage });
+let upload = multer(
+    {
+        storage: storage,
+        limits: {
+            fileSize: 1024 * 1024
+        }
+    }).single('document');
 
 router.get('/detail', UserController.userDetail);
 router.get('/getTokenId', UserController.getTokenId);
@@ -28,6 +34,15 @@ router.post('/sendMessage', AuthController.verifyTokenForAdmin, UserController.s
 router.post('/getCredentials', AuthController.verifyTokenForUser, UserController.getCredentials);
 router.post('/transactions', AuthController.verifyTokenForAdmin, UserController.getTransactions);
 router.post('/transaction/create', AuthController.verifyTokenForAdmin, UserController.createTransaction);
-router.post('/create/membershipAppeal', [AuthController.verifyTokenForUser, upload.single('document')], UserController.createMembershipAppeal);
+router.post('/create/membershipAppeal',
+    [
+        AuthController.verifyTokenForUser,
+        (req, res, next) => {
+            upload(req, res, error => {
+                if (error) Object.assign(req, { multerError: error.message || error });
+                next();
+            });
+        }
+    ], UserController.createMembershipAppeal);
 
 module.exports = router;

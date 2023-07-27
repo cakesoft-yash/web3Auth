@@ -86,6 +86,7 @@ exports.createTransaction = async function (req, res) {
 
 exports.createMembershipAppeal = async function (req, res) {
     try {
+        if (req.multerError) throw Error(req.multerError);
         let result = await UserService.createMembershipAppeal(req.body, req.file, req.user);
         return res.status(200).send(result);
     } catch (error) {
