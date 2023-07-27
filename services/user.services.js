@@ -1,3 +1,8 @@
+const fs = require('fs');
+const { promisify } = require('util');
+const convert = require('heic-convert');
+
+
 const Web3 = require('web3');
 const config = require('config');
 const request = require('request');
@@ -371,6 +376,18 @@ exports.createTransaction = async function (obj, adminUser) {
 
 exports.createMembershipAppeal = async function (obj, file, user) {
   if (!file) throw Error('Select the file');
+  if (file.mimetype === 'image/heic') {
+    const inputBuffer = await fs.readFileSync(file.path);
+    const outputBuffer = await convert({
+      buffer: inputBuffer,
+      format: 'JPEG',
+      quality: 1
+    });
+    let fileName = file.filename.split('.');
+    Object.assign(file, { filename: `${fileName[0]}.jpg` });
+    await fs.writeFileSync(`${file.destination}/${file.filename}`, outputBuffer);
+    await fs.unlinkSync(file.path);
+  }
   await ChatUser.findOneAndUpdate(
     {
       username: user.username
