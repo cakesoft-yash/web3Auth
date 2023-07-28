@@ -4,6 +4,7 @@ const Utils = require('../utils');
 const Otp = require('../models/otp.model');
 const Shop = require('../models/shop.model');
 const Admin = require('../models/admin.model');
+const ChatUser = require('../models/chat.user.model');
 const UserKeyShare = require('../models/userKeyShare.model');
 const MarketplaceGlobal = require('../models/marketplaceGlobal.model');
 
@@ -217,7 +218,7 @@ exports.verifyOTP = async function (obj) {
     }
   );
   let privateKeyCreated = false; let walletAddress; let keyShare1; let keyShare2;
-  let userKeyShare;
+  let userKeyShare; let userRegistered = false;
   switch (obj.verifyOTPFrom) {
     case 'signup':
       userKeyShare = await UserKeyShare.findOne(
@@ -241,6 +242,15 @@ exports.verifyOTP = async function (obj) {
       if (userKeyShare) {
         privateKeyCreated = true;
         keyShare1 = userKeyShare.keyShare1;
+      }
+      let user = await ChatUser.findOne(
+        {
+          'emails.address': obj.email,
+          walletAddress: { $exists: true }
+        }
+      );
+      if (user) {
+        userRegistered = true;
       }
       break;
   }
@@ -277,6 +287,7 @@ exports.verifyOTP = async function (obj) {
   }
   return {
     success: true,
+    userRegistered,
     privateKeyCreated,
     walletAddress,
     keyShare1,
