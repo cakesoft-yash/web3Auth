@@ -402,6 +402,9 @@ exports.createMembershipAppeal = async function (obj, file, user) {
       username: user.username
     },
     {
+      $set: {
+        membershipStatus: 'pending'
+      },
       $push: {
         membershipAppeal: {
           _id: uuidv4(),
