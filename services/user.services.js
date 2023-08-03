@@ -1,12 +1,9 @@
 const fs = require('fs');
-const { promisify } = require('util');
-const convert = require('heic-convert');
-
-
 const Web3 = require('web3');
 const config = require('config');
 const request = require('request');
 const { v4: uuidv4 } = require('uuid');
+const convert = require('heic-convert');
 const Shop = require('../models/shop.model');
 const ChatUser = require('../models/chat.user.model');
 const Web3UserTransaction = require('../models/web3UserTransaction.model');
@@ -104,6 +101,18 @@ exports.getTokenId = async function (queryParams) {
   return {
     success: true,
     tokenId: user && user.tokenId ? user.tokenId : null
+  };
+}
+
+exports.getMembershipStatus = async function (chatUser) {
+  let user = await ChatUser.findOne(
+    {
+      username: chatUser.username
+    }
+  );
+  return {
+    success: true,
+    status: user && user.membershipStatus ? user.membershipStatus : 'pending'
   };
 }
 

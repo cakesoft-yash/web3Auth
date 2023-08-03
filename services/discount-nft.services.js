@@ -1,6 +1,8 @@
 const config = require('config');
 const { v4: uuidv4 } = require('uuid');
+const ChatUser = require('../models/chat.user.model');
 const DiscountNFT = require('../models/discount-nft.model');
+const NotificationService = require('../services/notification.service');
 
 exports.list = async function (obj) {
   if (!obj.userId) throw Error('User Id is required');
@@ -60,6 +62,7 @@ exports.create = async function (obj, file) {
     }
   );
   await DiscountNFT.create(obj);
+  module.exports.notifyUser();
   return {
     success: true,
     message: 'Otp verified successfully'
@@ -156,4 +159,23 @@ exports.purchased = async function (obj) {
     success: true,
     purchasedCoupons: purchasedNFTs
   };
+}
+
+exports.notifyUser = async function () {
+  let users = await ChatUser.find(
+    {
+      walletAddress: { $exists: true }
+    }
+  );
+  users.forEach(async user => {
+    await NotificationService.create(
+      {
+        _id: uuidv4(),
+        username: user.username,
+        type: 'discount-nft',
+        title: 'Reward',
+        message: 'New reward NFT has been created',
+      }
+    );
+  });
 }

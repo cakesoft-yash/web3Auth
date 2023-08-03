@@ -29,6 +29,8 @@ let upload = multer(
 
 router.get('/detail', UserController.userDetail);
 router.get('/getTokenId', UserController.getTokenId);
+router.get('/membershipStatus', AuthController.verifyTokenForUser, UserController.getMembershipStatus);
+
 router.post('/list', AuthController.verifyTokenForAdmin, UserController.getUsers);
 router.post('/sendMessage', AuthController.verifyTokenForAdmin, UserController.sendMessage);
 router.post('/getCredentials', AuthController.verifyTokenForUser, UserController.getCredentials);
