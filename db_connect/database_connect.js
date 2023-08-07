@@ -10,7 +10,7 @@ try {
         poolSize: 100
     });
     marketplaceDbConnection.on('connected', function () {
-        console.log('Succesfully Connected to the Mongodb.');
+        console.log('Succesfully Connected to the Marketplace Mongodb.');
     });
 } catch (error) {
     console.log('marketplaceDbConnection', error);
@@ -26,4 +26,23 @@ chatDbConnection.on('connected', function () {
     console.log('Succesfully Connected to the Chat Mongodb');
 });
 
-module.exports = { marketplaceDbConnection, chatDbConnection };
+let splendSocialDbConnection = mongoose.createConnection(config.mongodb.splendSocialDbUrl, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+});
+
+splendSocialDbConnection.on('connected', function () {
+    console.log('Succesfully Connected to the Social Mongodb');
+});
+
+let walletDbConnection = mongoose.createConnection(config.mongodb.walletDbUrl, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+});
+
+walletDbConnection.on('connected', function () {
+    console.log('Succesfully Connected to the Wallet Mongodb');
+});
+module.exports = { marketplaceDbConnection, chatDbConnection, splendSocialDbConnection, walletDbConnection };

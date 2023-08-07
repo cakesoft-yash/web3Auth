@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const chatDbConnection = require('../db_connect/database_connect').chatDbConnection;
+const walletDbConnection = require('../db_connect/database_connect').walletDbConnection;
 
 const NotificationSchema = new mongoose.Schema({
     _id: {
@@ -16,23 +16,11 @@ const NotificationSchema = new mongoose.Schema({
     message: {
         type: String
     },
-    type: {
-        type: String,
-        default: null
-    },
-    note: {
-        type: String,
-        default: null
-    },
     status: {
         type: String,
         enum: ['pending', 'sent', 'error', 'failed', 'processing', 'cancelled'],
         default: 'pending'
-    },
-    sentAt: {
-        type: Date
-    },
-    logs: mongoose.Mixed,
+    }
 }, {
     timestamps: true,
     toObject: {
@@ -50,6 +38,6 @@ const NotificationSchema = new mongoose.Schema({
 }
 );
 
-const Notification = chatDbConnection.model('Notification', NotificationSchema);
+const Notification = walletDbConnection.model('Notification', NotificationSchema);
 
 module.exports = Notification;

@@ -10,7 +10,10 @@
         "runBackgroundTasks": false
     },
     "mongodb": {
-        "url": ""
+        "url": "",
+        "chatDbUrl": "",
+        "splendSocialDbUrl": "",
+        "walletDbUrl": ""
     },
     "nodemailer": {
         "port": 0,

@@ -1,6 +1,9 @@
 const config = require('config');
 const request = require('request');
 const Notification = require('../models/notification.model');
+const SocialNotification = require('../models/socialNotification.model');
+const WalletNotification = require('../models/walletNotification.model');
+const MarketplaceNotification = require('../models/marketplaceNotification.model');
 
 exports.create = async function (obj) {
     return await Notification.create(obj);
@@ -67,4 +70,68 @@ exports.send = async function () {
         }
     }
     setTimeout(exports.send, 5000);
+}
+
+exports.list = async function (user) {
+    const notifications = await Notification.find(
+        {
+            username: user.username,
+            status: 'sent'
+        },
+        {
+            title: 1,
+            message: 1,
+            username: 1,
+            createdAt: 1,
+        }
+    ).sort({ createdAt: -1 }).limit(20);
+    const socialNotifications = await SocialNotification.find(
+        {
+            username: user.username,
+            status: 'sent'
+        },
+        {
+            title: 1,
+            message: 1,
+            username: 1,
+            createdAt: 1,
+        }
+    ).sort({ createdAt: -1 }).limit(20);
+    const walletNotifications = await WalletNotification.find(
+        {
+            username: user.username,
+            status: 'sent'
+        },
+        {
+            title: 1,
+            message: 1,
+            username: 1,
+            createdAt: 1,
+        }
+    ).sort({ createdAt: -1 }).limit(20);
+    const marketplaceNotifications = await MarketplaceNotification.find(
+        {
+            username: user.username,
+            status: 'sent'
+        },
+        {
+            title: 1,
+            message: 1,
+            username: 1,
+            createdAt: 1,
+        }
+    ).sort({ createdAt: -1 }).limit(20);
+    let allNotifications = [
+        ...notifications,
+        ...socialNotifications,
+        ...walletNotifications,
+        ...marketplaceNotifications
+    ];
+    allNotifications = allNotifications
+        .sort((notification1, notification2) => new Date(notification2.createdAt) - new Date(notification1.createdAt))
+        .slice(0, 30);
+    return {
+        success: true,
+        allNotifications
+    }
 }

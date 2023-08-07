@@ -7,6 +7,7 @@ const email = require('./email');
 const web2Auth = require('./web2Auth');
 const web3Auth = require('./web3Auth');
 const discountNFT = require('./discount-nft');
+const notification = require('./notification');
 
 router.use('/time', (req, res) => res.send(new Date().toString()));
 router.use('/reactNativeMessage', (req, res) => {
@@ -31,5 +32,6 @@ router.use('/email', email);
 router.use('/web2Auth', web2Auth);
 router.use('/web3Auth', web3Auth);
 router.use('/discount-nft', discountNFT);
+router.use('/notification', notification);
 
 module.exports = router;
