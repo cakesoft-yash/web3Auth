@@ -337,7 +337,7 @@ exports.createTransaction = async function (obj, adminUser) {
       },
       {
         $set: {
-          membershipStatus: obj.event
+          membershipStatus: obj.event === 'restore' ? 'approved' : obj.event
         }
       }
     );
@@ -376,7 +376,7 @@ exports.createTransaction = async function (obj, adminUser) {
           }
         );
         break;
-      case 'pending':
+      case 'restore':
         await NotificationService.create(
           {
             _id: uuidv4(),
