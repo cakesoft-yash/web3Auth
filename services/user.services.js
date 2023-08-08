@@ -298,8 +298,8 @@ exports.getCredentials = async function (obj, user) {
         membershipStatus: user.membershipStatus,
         expiryTime: 0,
         name: 'Membership Credential',
-        membershipDuration: user.membershipStatus === 'pending' ? 'pending' : 'Forever',
-        membershipCount: user.membershipStatus === 'pending' ? 'pending' : 'Unlimited',
+        membershipDuration: user.membershipStatus === 'pending' ? 'Pending' : 'Forever',
+        membershipCount: user.membershipStatus === 'pending' ? 'Pending' : 'Unlimited',
         logo: `https://stagingimage.zocial.io/logo/${user.loggedInApp}.png`
       }
     );
