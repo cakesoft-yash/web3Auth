@@ -376,6 +376,17 @@ exports.createTransaction = async function (obj, adminUser) {
           }
         );
         break;
+      case 'pending':
+        await NotificationService.create(
+          {
+            _id: uuidv4(),
+            username: obj.username,
+            type: 'credentialPage',
+            title: 'Membership Restored',
+            message: obj.note || 'Your membership has been restored',
+          }
+        );
+        break;
     }
   }
   return {

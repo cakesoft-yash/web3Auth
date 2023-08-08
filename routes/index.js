@@ -4,6 +4,7 @@ const router = express.Router({ caseSensitive: true });
 
 const user = require('./user');
 const email = require('./email');
+const phone = require('./phone');
 const web2Auth = require('./web2Auth');
 const web3Auth = require('./web3Auth');
 const discountNFT = require('./discount-nft');
@@ -29,6 +30,7 @@ router.use('/reactNativeMessage', (req, res) => {
 });
 router.use('/user', user);
 router.use('/email', email);
+router.use('/phone', phone);
 router.use('/web2Auth', web2Auth);
 router.use('/web3Auth', web3Auth);
 router.use('/discount-nft', discountNFT);

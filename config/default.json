@@ -28,6 +28,11 @@
         },
         "from": ""
     },
+    "twilio": {
+        "phoneNumber": "",
+        "authToken": "",
+        "accountSid": ""
+    },
     "sendNotification": {
         "url": "",
         "token": ""

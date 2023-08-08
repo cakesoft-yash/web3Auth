@@ -12,7 +12,12 @@ const OtpSchema = new mongoose.Schema({
         type: Date
     },
     email: {
-        type: String
+        type: String,
+        default: null
+    },
+    phone: {
+        type: String,
+        default: null
     }
 }, {
     timestamps: true,

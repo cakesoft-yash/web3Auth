@@ -1,4 +1,5 @@
 'use strict';
+const twilio = require('twilio');
 const bcrypt = require('bcrypt');
 const config = require('config');
 const CryptoJS = require('crypto-js');
@@ -93,4 +94,24 @@ exports.hashPassword = async function (password) {
 exports.verifyPassword = async function (password, hash) {
   const verifyPassword = await bcrypt.compare(password, hash);
   return verifyPassword;
+}
+
+exports.sendOtp = async function (phone, message) {
+  const startWithPlus = phone.startsWith('+');
+  phone = startWithPlus ? phone : `+${phone}`;
+  let twilioClient = new twilio(config.twilio.accountSid, config.twilio.authToken);
+  return await new Promise((resolve, reject) => {
+    twilioClient.messages.create({
+      to: phone,
+      from: config.twilio.phoneNumber,
+      body: message
+    }, function (error, message) {
+      if (error != null && error) {
+        console.log('Twilio Error', error);
+        reject(error);
+      } else {
+        resolve(message);
+      }
+    })
+  });
 }
