@@ -286,11 +286,21 @@ exports.getCredentials = async function (obj, user) {
     result.push(
       {
         communityName: user.loggedInApp,
+        membershipStatus: 'pending',
+        expiryTime: 0,
+        name: 'Payment Gateway Credential',
+        membershipDuration: 'Forever',
+        membershipCount: 'Unlimited',
+        logo: 'https://stagingimage.zocial.io/logo/doku.png'
+      },
+      {
+        communityName: user.loggedInApp,
         membershipStatus: user.membershipStatus,
         expiryTime: 0,
         name: 'Membership Credential',
         membershipDuration: user.membershipStatus === 'pending' ? 'pending' : 'Forever',
         membershipCount: user.membershipStatus === 'pending' ? 'pending' : 'Unlimited',
+        logo: `https://stagingimage.zocial.io/logo/${user.loggedInApp}.png`
       }
     );
   }
