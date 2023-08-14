@@ -100,10 +100,13 @@ exports.buyNFT = async function (obj) {
   };
 }
 
-exports.available = async function (obj) {
+exports.available = async function (obj, user) {
   let discountNFTs = await DiscountNFT
     .find(
-      { isRemoved: false },
+      {
+        isRemoved: false,
+        'purchasedBy.walletAddress': { $ne: user.walletAddress }
+      },
       {
         name: 1,
         price: 1,

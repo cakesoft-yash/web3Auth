@@ -38,7 +38,7 @@ exports.buyNFT = async function (req, res) {
 
 exports.available = async function (req, res) {
     try {
-        let result = await DiscountNFTService.available(req.body);
+        let result = await DiscountNFTService.available(req.body, req.user);
         return res.status(200).send(result);
     } catch (error) {
         return res.status(500).send({
