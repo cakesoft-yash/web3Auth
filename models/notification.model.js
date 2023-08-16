@@ -33,6 +33,10 @@ const NotificationSchema = new mongoose.Schema({
         type: Date
     },
     logs: mongoose.Mixed,
+    isCleared: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true,
     toObject: {

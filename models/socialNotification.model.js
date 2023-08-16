@@ -20,6 +20,10 @@ const NotificationSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'sent', 'error', 'failed', 'processing', 'cancelled'],
         default: 'pending'
+    },
+    isCleared: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true,

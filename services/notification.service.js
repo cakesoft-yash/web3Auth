@@ -76,7 +76,11 @@ exports.list = async function (user) {
     const notifications = await Notification.find(
         {
             username: user.username,
-            status: 'sent'
+            status: 'sent',
+            $or: [
+                { isCleared: false },
+                { isCleared: { $exists: false } }
+            ]
         },
         {
             title: 1,
@@ -88,7 +92,11 @@ exports.list = async function (user) {
     const socialNotifications = await SocialNotification.find(
         {
             username: user.username,
-            status: 'sent'
+            status: 'sent',
+            $or: [
+                { isCleared: false },
+                { isCleared: { $exists: false } }
+            ]
         },
         {
             title: 1,
@@ -100,7 +108,11 @@ exports.list = async function (user) {
     const walletNotifications = await WalletNotification.find(
         {
             username: user.username,
-            status: 'sent'
+            status: 'sent',
+            $or: [
+                { isCleared: false },
+                { isCleared: { $exists: false } }
+            ]
         },
         {
             title: 1,
@@ -112,7 +124,11 @@ exports.list = async function (user) {
     const marketplaceNotifications = await MarketplaceNotification.find(
         {
             username: user.username,
-            status: 'sent'
+            status: 'sent',
+            $or: [
+                { isCleared: false },
+                { isCleared: { $exists: false } }
+            ]
         },
         {
             title: 1,
@@ -133,5 +149,53 @@ exports.list = async function (user) {
     return {
         success: true,
         allNotifications
+    }
+}
+
+exports.clearAll = async function (obj, user) {
+    if (!obj.notificationIds || !obj.notificationIds.length) throw Error('Notification Ids is required');
+    await Notification.updateMany(
+        {
+            _id: { $in: obj.notificationIds }
+        },
+        {
+            $set: {
+                isCleared: true
+            }
+        }
+    );
+    await SocialNotification.updateMany(
+        {
+            _id: { $in: obj.notificationIds }
+        },
+        {
+            $set: {
+                isCleared: true
+            }
+        }
+    );
+    await WalletNotification.updateMany(
+        {
+            _id: { $in: obj.notificationIds }
+        },
+        {
+            $set: {
+                isCleared: true
+            }
+        }
+    );
+    await MarketplaceNotification.updateMany(
+        {
+            _id: { $in: obj.notificationIds }
+        },
+        {
+            $set: {
+                isCleared: true
+            }
+        }
+    );
+    return {
+        success: true,
+        message: 'Notifications cleared successfully'
     }
 }
