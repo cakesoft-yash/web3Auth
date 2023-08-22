@@ -86,7 +86,7 @@ exports.list = async function (user) {
             title: 1,
             message: 1,
             username: 1,
-            createdAt: 1,
+            sentAt: 1
         }
     ).sort({ createdAt: -1 }).limit(20);
     const socialNotifications = await SocialNotification.find(
@@ -102,7 +102,7 @@ exports.list = async function (user) {
             title: 1,
             message: 1,
             username: 1,
-            createdAt: 1,
+            sentAt: 1
         }
     ).sort({ createdAt: -1 }).limit(20);
     const walletNotifications = await WalletNotification.find(
@@ -118,7 +118,7 @@ exports.list = async function (user) {
             title: 1,
             message: 1,
             username: 1,
-            createdAt: 1,
+            sentAt: 1
         }
     ).sort({ createdAt: -1 }).limit(20);
     const marketplaceNotifications = await MarketplaceNotification.find(
@@ -134,7 +134,7 @@ exports.list = async function (user) {
             title: 1,
             message: 1,
             username: 1,
-            createdAt: 1,
+            sentAt: 1
         }
     ).sort({ createdAt: -1 }).limit(20);
     let allNotifications = [

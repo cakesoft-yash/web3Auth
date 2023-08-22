@@ -21,6 +21,9 @@ const NotificationSchema = new mongoose.Schema({
         enum: ['pending', 'sent', 'error', 'failed', 'processing', 'cancelled'],
         default: 'pending'
     },
+    sentAt: {
+        type: Date
+    },
     isCleared: {
         type: Boolean,
         default: false
