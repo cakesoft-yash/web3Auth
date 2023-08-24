@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const convert = require('heic-convert');
 const Shop = require('../models/shop.model');
 const ChatUser = require('../models/chat.user.model');
+const WalletUser = require('../models/wallet.user.model');
 const Web3UserTransaction = require('../models/web3UserTransaction.model');
 const NotificationService = require('../services/notification.service');
 const Utils = require('../utils');
@@ -283,16 +284,26 @@ exports.getCredentials = async function (obj, user) {
     //     }
     //   );
     // }
-    result.push(
+    const walletUser = await WalletUser.findOne(
       {
-        communityName: user.loggedInApp,
-        membershipStatus: 'pending',
-        expiryTime: 0,
-        name: 'Payment Gateway Credential',
-        membershipDuration: 'Forever',
-        membershipCount: 'Unlimited',
-        logo: 'https://stagingimage.zocial.io/logo/doku.png'
-      },
+        username: user.username,
+        email: user.emails[0].address
+      }
+    );
+    if (walletUser && walletUser.dokuId) {
+      result.push(
+        {
+          communityName: user.loggedInApp,
+          membershipStatus: 'pending',
+          expiryTime: 0,
+          name: 'Payment Gateway Credential',
+          membershipDuration: 'Forever',
+          membershipCount: 'Unlimited',
+          logo: 'https://stagingimage.zocial.io/logo/doku.png'
+        }
+      );
+    };
+    result.push(
       {
         communityName: user.loggedInApp,
         membershipStatus: user.membershipStatus,
