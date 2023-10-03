@@ -6,7 +6,9 @@ const { v4: uuidv4 } = require('uuid');
 const convert = require('heic-convert');
 const Shop = require('../models/shop.model');
 const ChatUser = require('../models/chat.user.model');
+const SocialUser = require('../models/socialUser.model');
 const WalletUser = require('../models/wallet.user.model');
+const MarketplaceUser = require('../models/marketplaceUser.model');
 const Web3UserTransaction = require('../models/web3UserTransaction.model');
 const NotificationService = require('../services/notification.service');
 const Utils = require('../utils');
@@ -248,79 +250,6 @@ exports.sendMessage = async function (obj, user) {
   }
 }
 
-exports.getCredentials = async function (obj, user) {
-  let result = [];
-  if (user.tokenId) {
-    // // const web3 = new Web3(Utils.networks[obj.chainId]);
-    // const web3 = new Web3(Utils.networks[80001]);
-    // let contractAddress; let membershipABI_JSON;
-    // if (user.membershipWithExpiry) {
-    //   contractAddress = config.contractAddressWithExpiry;
-    //   membershipABI_JSON = membershipWithExpiryABI;
-    // } else {
-    //   contractAddress = config.contractAddress;
-    //   membershipABI_JSON = membershipABI;
-    // }
-    // const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
-    // const response = await myContract.methods
-    //   .getMembershipStatus(user.tokenId)
-    //   .call();
-    // if (response) {
-    //   let membershipStatus; let expiryTime;
-    //   if (response._membershipStatus) {
-    //     membershipStatus = response._membershipStatus;
-    //     expiryTime = response._expiryTime;
-    //   } else {
-    //     membershipStatus = response;
-    //   }
-    //   result.push(
-    //     {
-    //       communityName: user.loggedInApp,
-    //       membershipStatus,
-    //       expiryTime,
-    //       name: 'Membership Credential',
-    //       membershipDuration: response === 'pending' ? 'pending' : 'Forever',
-    //       membershipCount: response === 'pending' ? 'pending' : 'Unlimited',
-    //     }
-    //   );
-    // }
-    const walletUser = await WalletUser.findOne(
-      {
-        username: user.username,
-        email: user.emails[0].address
-      }
-    );
-    if (walletUser && walletUser.dokuId) {
-      result.push(
-        {
-          communityName: user.loggedInApp,
-          membershipStatus: 'pending',
-          expiryTime: 0,
-          name: 'Payment Gateway Credential',
-          membershipDuration: 'Forever',
-          membershipCount: 'Unlimited',
-          logo: 'https://stagingimage.zocial.io/logo/doku.png'
-        }
-      );
-    };
-    result.push(
-      {
-        communityName: user.loggedInApp,
-        membershipStatus: user.membershipStatus,
-        expiryTime: 0,
-        name: 'Membership Credential',
-        membershipDuration: user.membershipStatus === 'pending' ? 'Pending' : 'Forever',
-        membershipCount: user.membershipStatus === 'pending' ? 'Pending' : 'Unlimited',
-        logo: `https://stagingimage.zocial.io/logo/${user.loggedInApp}.png`
-      }
-    );
-  }
-  return {
-    success: true,
-    result
-  };
-}
-
 exports.getTransactions = async function (obj, user) {
   if (!obj.walletAddress) throw Error('WalletAddress is required');
   if (!obj.tokenId) throw Error('Token Id is required');
@@ -412,6 +341,135 @@ exports.createTransaction = async function (obj, adminUser) {
   }
   return {
     success: true
+  };
+}
+
+exports.updateUser = async function (obj, user) {
+  if (Object.keys(obj).length === 0) throw Error('Atleast one field required to update the user');
+  let query = {};
+  if (obj.firstName && obj.lastName) Object.assign(query,
+    {
+      firstName: obj.firstName,
+      lastName: obj.lastName,
+      name: `${obj.firstName} ${obj.lastName}`,
+      'data.name': `${obj.firstName} ${obj.lastName}`,
+      membershipStatus: 'pending'
+    }
+  );
+  if (obj.displayUsername) {
+    let user = await SocialUser.findOne(
+      {
+        zocial_username: obj.displayUsername
+      }
+    );
+    if (user) throw Error('Username used already');
+    Object.assign(query,
+      {
+        zocial_username: obj.displayUsername,
+        displayUsername: obj.displayUsername
+      }
+    );
+  }
+  await ChatUser.findOneAndUpdate(
+    {
+      username: user.username
+    },
+    {
+      $set: query
+    }
+  );
+  await MarketplaceUser.findOneAndUpdate(
+    {
+      username: user.username
+    },
+    {
+      $set: query
+    }
+  );
+  await SocialUser.findOneAndUpdate(
+    {
+      username: user.username
+    },
+    {
+      $set: query
+    }
+  );
+  return {
+    success: true,
+    message: 'User updated successfully'
+  };
+}
+
+exports.getCredentials = async function (obj, user) {
+  let result = [];
+  if (user.tokenId) {
+    // // const web3 = new Web3(Utils.networks[obj.chainId]);
+    // const web3 = new Web3(Utils.networks[80001]);
+    // let contractAddress; let membershipABI_JSON;
+    // if (user.membershipWithExpiry) {
+    //   contractAddress = config.contractAddressWithExpiry;
+    //   membershipABI_JSON = membershipWithExpiryABI;
+    // } else {
+    //   contractAddress = config.contractAddress;
+    //   membershipABI_JSON = membershipABI;
+    // }
+    // const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
+    // const response = await myContract.methods
+    //   .getMembershipStatus(user.tokenId)
+    //   .call();
+    // if (response) {
+    //   let membershipStatus; let expiryTime;
+    //   if (response._membershipStatus) {
+    //     membershipStatus = response._membershipStatus;
+    //     expiryTime = response._expiryTime;
+    //   } else {
+    //     membershipStatus = response;
+    //   }
+    //   result.push(
+    //     {
+    //       communityName: user.loggedInApp,
+    //       membershipStatus,
+    //       expiryTime,
+    //       name: 'Membership Credential',
+    //       membershipDuration: response === 'pending' ? 'pending' : 'Forever',
+    //       membershipCount: response === 'pending' ? 'pending' : 'Unlimited',
+    //     }
+    //   );
+    // }
+    const walletUser = await WalletUser.findOne(
+      {
+        username: user.username,
+        email: user.emails[0].address
+      }
+    );
+    if (walletUser && walletUser.dokuId) {
+      result.push(
+        {
+          communityName: user.loggedInApp,
+          membershipStatus: 'pending',
+          expiryTime: 0,
+          name: 'Payment Gateway Credential',
+          membershipDuration: 'Forever',
+          membershipCount: 'Unlimited',
+          logo: 'https://stagingimage.zocial.io/logo/doku.png'
+        }
+      );
+    };
+    result.push(
+      {
+        communityName: user.loggedInApp,
+        membershipStatus: user.membershipStatus,
+        expiryTime: 0,
+        name: 'Membership Credential',
+        membershipDuration: user.membershipStatus === 'pending' ? 'Pending' : 'Forever',
+        membershipCount: user.membershipStatus === 'pending' ? 'Pending' : 'Unlimited',
+        logo: `https://stagingimage.zocial.io/logo/${user.loggedInApp}.png`
+      }
+    );
+  }
+  return {
+    success: true,
+    result
   };
 }
 

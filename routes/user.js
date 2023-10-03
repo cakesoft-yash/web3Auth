@@ -33,9 +33,11 @@ router.get('/membershipStatus', AuthController.verifyTokenForUser, UserControlle
 
 router.post('/list', AuthController.verifyTokenForAdmin, UserController.getUsers);
 router.post('/sendMessage', AuthController.verifyTokenForAdmin, UserController.sendMessage);
-router.post('/getCredentials', AuthController.verifyTokenForUser, UserController.getCredentials);
 router.post('/transactions', AuthController.verifyTokenForAdmin, UserController.getTransactions);
 router.post('/transaction/create', AuthController.verifyTokenForAdmin, UserController.createTransaction);
+
+router.post('/update', AuthController.verifyTokenForUser, UserController.updateUser);
+router.post('/getCredentials', AuthController.verifyTokenForUser, UserController.getCredentials);
 router.post('/create/membershipAppeal',
     [
         AuthController.verifyTokenForUser,

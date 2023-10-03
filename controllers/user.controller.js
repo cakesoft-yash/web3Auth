@@ -60,18 +60,6 @@ exports.sendMessage = async function (req, res) {
     }
 }
 
-exports.getCredentials = async function (req, res) {
-    try {
-        let result = await UserService.getCredentials(req.body, req.user);
-        return res.status(200).send(result);
-    } catch (error) {
-        return res.status(500).send({
-            success: false,
-            message: error.message
-        });
-    }
-}
-
 exports.getTransactions = async function (req, res) {
     try {
         let result = await UserService.getTransactions(req.body, req.user);
@@ -87,6 +75,30 @@ exports.getTransactions = async function (req, res) {
 exports.createTransaction = async function (req, res) {
     try {
         let result = await UserService.createTransaction(req.body, req.user);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+exports.updateUser = async function (req, res) {
+    try {
+        let result = await UserService.updateUser(req.body, req.user);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+exports.getCredentials = async function (req, res) {
+    try {
+        let result = await UserService.getCredentials(req.body, req.user);
         return res.status(200).send(result);
     } catch (error) {
         return res.status(500).send({
