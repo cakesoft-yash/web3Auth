@@ -359,6 +359,7 @@ exports.updateUser = async function (obj, user) {
   if (obj.displayUsername) {
     let user = await SocialUser.findOne(
       {
+        username: { $ne: user.username },
         zocial_username: obj.displayUsername
       }
     );
