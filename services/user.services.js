@@ -357,13 +357,13 @@ exports.updateUser = async function (obj, user) {
     }
   );
   if (obj.displayUsername) {
-    let user = await SocialUser.findOne(
+    const userExists = await SocialUser.findOne(
       {
         username: { $ne: user.username },
         zocial_username: obj.displayUsername
       }
     );
-    if (user) throw Error('Username used already');
+    if (userExists) throw Error('Username used already');
     Object.assign(query,
       {
         zocial_username: obj.displayUsername,
