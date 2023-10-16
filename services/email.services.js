@@ -7,6 +7,7 @@ const Admin = require('../models/admin.model');
 const ChatUser = require('../models/chat.user.model');
 const UserKeyShare = require('../models/userKeyShare.model');
 const MarketplaceGlobal = require('../models/marketplaceGlobal.model');
+const Web3AuthService = require('../services/web3Auth.services');
 
 exports.sendOTP = async function (obj) {
   if (!obj.email) throw Error('Email is required');
@@ -190,9 +191,15 @@ exports.sendOTP = async function (obj) {
     </html>`;
     await Utils.sendEmail(obj.email, config.nodemailer.from, 'One Time Password(OTP) for verification', body);
   }
+  let userKeyShare = await UserKeyShare.findOne(
+    {
+      email: obj.email
+    }
+  );
   return {
     success: true,
-    message: 'OTP sent successfully'
+    message: 'OTP sent successfully',
+    walletCreated: userKeyShare ? true : false
   }
 }
 
@@ -218,22 +225,19 @@ exports.verifyOTP = async function (obj) {
     }
   );
   let privateKeyCreated = false; let walletAddress; let keyShare1; let keyShare2;
-  let userKeyShare; let userRegistered = false;
-  switch (obj.verifyOTPFrom) {
-    case 'signup':
-      userKeyShare = await UserKeyShare.findOne(
-        {
-          email: obj.email
-        }
-      );
-      if (userKeyShare) {
-        privateKeyCreated = true;
-        walletAddress = userKeyShare.walletAddress;
-        keyShare1 = userKeyShare.keyShare1;
-        keyShare2 = userKeyShare.keyShare2;
-      }
-      break;
-    case 'login':
+  let userKeyShare; let userRegistered = false; let userData;
+  let user = await ChatUser.findOne(
+    {
+      'emails.address': obj.email,
+      walletAddress: { $exists: true }
+    }
+  );
+  if (user) {
+    userRegistered = true;
+    if (obj.walletAddressExistsOnPhone) {
+      if (!obj.walletAddress) throw Error('Wallet address is required');
+      userData = await Web3AuthService.loginWithEmail({ walletAddress: obj.walletAddress });
+    } else {
       userKeyShare = await UserKeyShare.findOne(
         {
           email: obj.email
@@ -243,17 +247,55 @@ exports.verifyOTP = async function (obj) {
         privateKeyCreated = true;
         keyShare1 = userKeyShare.keyShare1;
       }
-      let user = await ChatUser.findOne(
-        {
-          'emails.address': obj.email,
-          walletAddress: { $exists: true }
-        }
-      );
-      if (user) {
-        userRegistered = true;
+    }
+  } else {
+    userKeyShare = await UserKeyShare.findOne(
+      {
+        email: obj.email
       }
-      break;
+    );
+    if (userKeyShare) {
+      privateKeyCreated = true;
+      walletAddress = userKeyShare.walletAddress;
+      keyShare1 = userKeyShare.keyShare1;
+      keyShare2 = userKeyShare.keyShare2;
+    }
   }
+  // switch (obj.verifyOTPFrom) {
+  //   case 'signup':
+  //     userKeyShare = await UserKeyShare.findOne(
+  //       {
+  //         email: obj.email
+  //       }
+  //     );
+  //     if (userKeyShare) {
+  //       privateKeyCreated = true;
+  //       walletAddress = userKeyShare.walletAddress;
+  //       keyShare1 = userKeyShare.keyShare1;
+  //       keyShare2 = userKeyShare.keyShare2;
+  //     }
+  //     break;
+  //   case 'login':
+  //     userKeyShare = await UserKeyShare.findOne(
+  //       {
+  //         email: obj.email
+  //       }
+  //     );
+  //     if (userKeyShare) {
+  //       privateKeyCreated = true;
+  //       keyShare1 = userKeyShare.keyShare1;
+  //     }
+  //     let user = await ChatUser.findOne(
+  //       {
+  //         'emails.address': obj.email,
+  //         walletAddress: { $exists: true }
+  //       }
+  //     );
+  //     if (user) {
+  //       userRegistered = true;
+  //     }
+  //     break;
+  // }
   if (obj.publicAddress) {
     if (!obj.loginFor) throw Error('Login for is required');
     if (!obj.keyShare1) throw Error('KeyShare is required');
@@ -287,6 +329,7 @@ exports.verifyOTP = async function (obj) {
   }
   return {
     success: true,
+    userData,
     userRegistered,
     privateKeyCreated,
     walletAddress,

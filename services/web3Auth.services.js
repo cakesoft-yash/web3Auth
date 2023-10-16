@@ -181,7 +181,8 @@ exports.verifyPassword = async function (obj) {
   return {
     success: true,
     message: 'Password verified successfully',
-    keyShare2: userKeyShare.keyShare2
+    keyShare2: userKeyShare.keyShare2,
+    walletAddress: userKeyShare.walletAddress
   };
 }
 
@@ -270,4 +271,9 @@ exports.registerPrivateKey = async function (obj) {
     success: true,
     message: 'Key registered successfully'
   };
+}
+
+exports.verifyPasswordAndLogin = async function (obj) {
+  let verifyPassword = await module.exports.verifyPassword(obj);
+  return await module.exports.loginWithEmail({ walletAddress: verifyPassword.walletAddress });
 }
