@@ -226,18 +226,29 @@ exports.verifyOTP = async function (obj) {
   );
   let privateKeyCreated = false; let walletAddress; let keyShare1; let keyShare2;
   let userKeyShare; let userRegistered = false; let userData;
-  let user = await ChatUser.findOne(
-    {
-      'emails.address': obj.email,
-      walletAddress: { $exists: true }
-    }
-  );
-  if (user) {
-    userRegistered = true;
-    if (obj.walletAddressExistsOnPhone) {
-      if (!obj.walletAddress) throw Error('Wallet address is required');
+  if (obj.walletAddressExistsOnPhone) {
+    if (!obj.walletAddress) throw Error('Wallet address is required');
+    let user = await ChatUser.findOne(
+      {
+        'emails.address': obj.email,
+        walletAddress: obj.walletAddress
+      }
+    );
+    if (user) {
+      userRegistered = true;
       userData = await Web3AuthService.loginWithEmail({ walletAddress: obj.walletAddress });
     } else {
+      throw Error('Wallet address and email mismatch');
+    }
+  } else {
+    let user = await ChatUser.findOne(
+      {
+        'emails.address': obj.email,
+        walletAddress: { $exists: true }
+      }
+    );
+    if (user) {
+      userRegistered = true;
       userKeyShare = await UserKeyShare.findOne(
         {
           email: obj.email
@@ -247,55 +258,20 @@ exports.verifyOTP = async function (obj) {
         privateKeyCreated = true;
         keyShare1 = userKeyShare.keyShare1;
       }
-    }
-  } else {
-    userKeyShare = await UserKeyShare.findOne(
-      {
-        email: obj.email
+    } else {
+      userKeyShare = await UserKeyShare.findOne(
+        {
+          email: obj.email
+        }
+      );
+      if (userKeyShare) {
+        privateKeyCreated = true;
+        walletAddress = userKeyShare.walletAddress;
+        keyShare1 = userKeyShare.keyShare1;
+        keyShare2 = userKeyShare.keyShare2;
       }
-    );
-    if (userKeyShare) {
-      privateKeyCreated = true;
-      walletAddress = userKeyShare.walletAddress;
-      keyShare1 = userKeyShare.keyShare1;
-      keyShare2 = userKeyShare.keyShare2;
     }
   }
-  // switch (obj.verifyOTPFrom) {
-  //   case 'signup':
-  //     userKeyShare = await UserKeyShare.findOne(
-  //       {
-  //         email: obj.email
-  //       }
-  //     );
-  //     if (userKeyShare) {
-  //       privateKeyCreated = true;
-  //       walletAddress = userKeyShare.walletAddress;
-  //       keyShare1 = userKeyShare.keyShare1;
-  //       keyShare2 = userKeyShare.keyShare2;
-  //     }
-  //     break;
-  //   case 'login':
-  //     userKeyShare = await UserKeyShare.findOne(
-  //       {
-  //         email: obj.email
-  //       }
-  //     );
-  //     if (userKeyShare) {
-  //       privateKeyCreated = true;
-  //       keyShare1 = userKeyShare.keyShare1;
-  //     }
-  //     let user = await ChatUser.findOne(
-  //       {
-  //         'emails.address': obj.email,
-  //         walletAddress: { $exists: true }
-  //       }
-  //     );
-  //     if (user) {
-  //       userRegistered = true;
-  //     }
-  //     break;
-  // }
   if (obj.publicAddress) {
     if (!obj.loginFor) throw Error('Login for is required');
     if (!obj.keyShare1) throw Error('KeyShare is required');
