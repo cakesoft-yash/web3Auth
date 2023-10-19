@@ -42,7 +42,7 @@ exports.verifyToken = async function (token) {
 }
 
 exports.userDetail = async function (queryParams) {
-  if (!queryParams.tokenId) throw Error('Token Id is required');
+  // if (!queryParams.tokenId) throw Error('Token Id is required');
   // if (!queryParams.chainId) throw Error('Chain Id is required');
   if (!queryParams.walletAddress) throw Error('WalletAddress is required');
   let user = await ChatUser.findOne(
