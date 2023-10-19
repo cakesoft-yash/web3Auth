@@ -15,5 +15,6 @@ router.post('/connectWallet', Web3AuthController.connectWallet);
 router.post('/verifySignMessage', Web3AuthController.verifySignMessage);
 router.post('/registerPrivateKey', Web3AuthController.registerPrivateKey);
 router.post('/verifyPasswordAndLogin', Web3AuthController.verifyPasswordAndLogin);
+router.post('/setPasswordAndRegisterKey', Web3AuthController.setPasswordAndRegisterKey);
 
 module.exports = router;

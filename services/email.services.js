@@ -151,7 +151,7 @@ exports.sendOTP = async function (obj) {
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <!-- LOGO -->
             <tr>
-                <td bgcolor="#17517b" align="center">
+                <td bgcolor="#2596be" align="center">
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                         <tr>
                             <td align="center" valign="top" style="padding: 40px 10px 40px 10px;"> </td>
@@ -160,11 +160,17 @@ exports.sendOTP = async function (obj) {
                 </td>
             </tr>
             <tr>
-                <td bgcolor="#17517b" align="center" style="padding: 0px 10px 0px 10px;">
+                <td bgcolor="#2596be" align="center" style="padding: 0px 10px 0px 10px;">
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                         <tr>
-                            <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
-                                <h1 style="font-size: 48px; font-weight: 400; margin: 2;">Welcome!</h1> <img src="https://image.zocial.io/ZocialLogo.png" width="125" height="120" style="display: block; border: 0px;" />
+                            <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px;">
+                                <h1 style="font-size: 48px; font-weight: 400; margin: 2;">Welcome!</h1> 
+                                <img src="https://image.zocial.io/marketplace/logos/zti_zti_new.png" width="125" height="120" style="display: block; border: 0px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td bgcolor="#ffffff" align="left" style="text-align: center; color: gray; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 25px; font-weight: 600;">
+                                <p style="margin: 0;">PT. Zocial Teknologi Indonesia</p>
                             </td>
                         </tr>
                     </table>
@@ -174,13 +180,18 @@ exports.sendOTP = async function (obj) {
                 <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                         <tr>
-                            <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                                <p style="margin: 0;">${otp} Your is your One Time Password(OTP) </p>
+                            <td bgcolor="#ffffff" align="left" style="padding-top: 15px; text-align: center; color: gray; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 600;">
+                                <p style="margin: 0;">Your verification code is</p>
                             </td>
                         </tr>
-    <tr>
-                            <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                                <p style="margin: 0;">Do not share your Otp with anyone</p>
+                        <tr>
+                            <td bgcolor="#ffffff" align="left" style="padding-top: 5px; text-align: center; color: gray; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 30px; font-weight: 600;">
+                                <p style="margin: 0;">${otp}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td bgcolor="#ffffff" align="left" style="padding: 5px 0px 20px 0px; text-align: center; color: gray; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 600;">
+                                <p style="margin: 0;">Never share your code</p>
                             </td>
                         </tr>
                     </table>
@@ -188,7 +199,8 @@ exports.sendOTP = async function (obj) {
             </tr>
         </table>
     </body>
-    </html>`;
+    </html>
+`;
     await Utils.sendEmail(obj.email, config.nodemailer.from, 'One Time Password(OTP) for verification', body);
   }
   let userKeyShare = await UserKeyShare.findOne(

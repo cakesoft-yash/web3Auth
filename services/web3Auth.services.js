@@ -277,3 +277,8 @@ exports.verifyPasswordAndLogin = async function (obj) {
   let verifyPassword = await module.exports.verifyPassword(obj);
   return await module.exports.loginWithEmail({ walletAddress: verifyPassword.walletAddress });
 }
+
+exports.setPasswordAndRegisterKey = async function (obj) {
+  await module.exports.setPassword(obj);
+  return await module.exports.registerPrivateKey(obj);
+}
