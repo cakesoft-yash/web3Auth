@@ -57,10 +57,7 @@ exports.decrypt = function (cipherText) {
   return plain;
 }
 
-exports.networks = {
-  // chainId : RPC URL
-  80001: 'https://matic-mumbai.chainstacklabs.com' //for polygon testnet
-}
+exports.networks = config.networks;
 
 exports.sendEmail = async function (to, from, subject, html, bcc = [], cc = []) {
   var transporter = nodemailer.createTransport(config.nodemailer);
