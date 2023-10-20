@@ -201,7 +201,7 @@ exports.sendOTP = async function (obj) {
     </body>
     </html>
 `;
-    await Utils.sendEmail(obj.email, config.nodemailer.from, 'One Time Password(OTP) for verification', body);
+    await Utils.sendEmail(obj.email, config.nodemailer.from, 'Verification code for ZTi', body);
   }
   let userKeyShare = await UserKeyShare.findOne(
     {
