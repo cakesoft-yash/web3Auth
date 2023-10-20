@@ -41,7 +41,6 @@ exports.signup = async function (obj) {
         loggedInApp: 'zti',
         ztiAppName: obj.ztiAppName,
         tokenId: obj.tokenId,
-        membershipWithExpiry: obj.membershipWithExpiry || false
       },
       json: true
     }, function (err, httpResponse, response) {

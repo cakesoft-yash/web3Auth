@@ -13,7 +13,6 @@ const Web3UserTransaction = require('../models/web3UserTransaction.model');
 const NotificationService = require('../services/notification.service');
 const Utils = require('../utils');
 // const membershipABI = require('../contracts_abi/membership.json');
-// const membershipWithExpiryABI = require('../contracts_abi/membershipExpiry.json');
 
 exports.getShopByToken = async function (token) {
   const shop = await Shop.findOne({ 'tokens.token': token });
@@ -58,15 +57,7 @@ exports.userDetail = async function (queryParams) {
     }
   }
   // const web3 = new Web3(Utils.networks[queryParams.chainId]);
-  // let contractAddress; let membershipABI_JSON;
-  // if (queryParams.membershipWithExpiry === 'true') {
-  //   contractAddress = config.contractAddressWithExpiry;
-  //   membershipABI_JSON = membershipWithExpiryABI;
-  // } else {
-  //   contractAddress = config.contractAddress;
-  //   membershipABI_JSON = membershipABI;
-  // }
-  // const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
+  // const myContract = await new web3.eth.Contract(membershipABI, config.contractAddress);
   // const response = await myContract.methods
   //   .getMembershipStatus(queryParams.tokenId)
   //   .call();
@@ -160,7 +151,6 @@ exports.getUsers = async function (obj, user) {
         displayUsername: 1,
         walletAddress: 1,
         tokenId: 1,
-        membershipWithExpiry: 1,
         membershipStatus: 1,
         createdAt: 1,
         membershipAppeal: 1
@@ -171,24 +161,6 @@ exports.getUsers = async function (obj, user) {
     { $limit: pageLimit }
   ]);
   const web3 = new Web3(Utils.networks[obj.chainId]);
-  // for (let index = 0; index < users.length; index++) {
-  //   const user = users[index];
-  //   let contractAddress; let membershipABI_JSON;
-  //   if (user.membershipWithExpiry) {
-  //     contractAddress = config.contractAddressWithExpiry;
-  //     membershipABI_JSON = membershipWithExpiryABI;
-  //     const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
-  //     const response = await myContract.methods
-  //       .getMembershipStatus(user.tokenId)
-  //       .call();
-  //     let membershipStatus; let expiryTime;
-  //     if (response._membershipStatus) {
-  //       membershipStatus = response._membershipStatus;
-  //       expiryTime = response._expiryTime;
-  //       Object.assign(user, { membershipStatus, expiryTime });
-  //     }
-  //   }
-  // }
   let totalUsers = await ChatUser.countDocuments(query);
   return {
     success: true,
@@ -406,15 +378,7 @@ exports.getCredentials = async function (obj, user) {
   if (user.tokenId) {
     // // const web3 = new Web3(Utils.networks[obj.chainId]);
     // const web3 = new Web3(Utils.networks[80001]);
-    // let contractAddress; let membershipABI_JSON;
-    // if (user.membershipWithExpiry) {
-    //   contractAddress = config.contractAddressWithExpiry;
-    //   membershipABI_JSON = membershipWithExpiryABI;
-    // } else {
-    //   contractAddress = config.contractAddress;
-    //   membershipABI_JSON = membershipABI;
-    // }
-    // const myContract = await new web3.eth.Contract(membershipABI_JSON, contractAddress);
+    // const myContract = await new web3.eth.Contract(membershipABI, config.contractAddress);
     // const response = await myContract.methods
     //   .getMembershipStatus(user.tokenId)
     //   .call();

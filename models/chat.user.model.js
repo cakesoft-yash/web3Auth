@@ -39,9 +39,6 @@ const UserSchema = new mongoose.Schema({
     tokenId: {
         type: Number
     },
-    membershipWithExpiry: {
-        type: Boolean
-    },
     membershipStatus: {
         type: String
     },
