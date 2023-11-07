@@ -203,15 +203,9 @@ exports.sendOTP = async function (obj) {
 `;
     await Utils.sendEmail(obj.email, config.nodemailer.from, 'Verification code for ZTi', body);
   }
-  let userKeyShare = await UserKeyShare.findOne(
-    {
-      email: obj.email
-    }
-  );
   return {
     success: true,
-    message: 'OTP sent successfully',
-    walletCreated: userKeyShare ? true : false
+    message: 'OTP sent successfully'
   }
 }
 
@@ -259,29 +253,17 @@ exports.verifyOTP = async function (obj) {
         walletAddress: { $exists: true }
       }
     );
-    if (user) {
-      userRegistered = true;
-      userKeyShare = await UserKeyShare.findOne(
-        {
-          email: obj.email
-        }
-      );
-      if (userKeyShare) {
-        privateKeyCreated = true;
-        keyShare1 = userKeyShare.keyShare1;
+    if (user) userRegistered = true;
+    userKeyShare = await UserKeyShare.findOne(
+      {
+        email: obj.email
       }
-    } else {
-      userKeyShare = await UserKeyShare.findOne(
-        {
-          email: obj.email
-        }
-      );
-      if (userKeyShare) {
-        privateKeyCreated = true;
-        walletAddress = userKeyShare.walletAddress;
-        keyShare1 = userKeyShare.keyShare1;
-        keyShare2 = userKeyShare.keyShare2;
-      }
+    );
+    if (userKeyShare) {
+      privateKeyCreated = true;
+      walletAddress = userKeyShare.walletAddress;
+      keyShare1 = userKeyShare.keyShare1;
+      keyShare2 = userKeyShare.keyShare2;
     }
   }
   if (obj.publicAddress) {
