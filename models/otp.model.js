@@ -18,6 +18,10 @@ const OtpSchema = new mongoose.Schema({
     phone: {
         type: String,
         default: null
+    },
+    numberOfUnsuccessfulAttempts: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true,

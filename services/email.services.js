@@ -30,7 +30,8 @@ exports.sendOTP = async function (obj) {
       {
         $set: {
           otp,
-          otpExpiryTime
+          otpExpiryTime,
+          numberOfUnsuccessfulAttempts: 0
         }
       }
     );
@@ -40,7 +41,8 @@ exports.sendOTP = async function (obj) {
         _id: uuidv4(),
         otp,
         otpExpiryTime,
-        email: obj.email
+        email: obj.email,
+        numberOfUnsuccessfulAttempts: 0
       }
     );
   }
@@ -217,8 +219,23 @@ exports.verifyOTP = async function (obj) {
       email: obj.email
     }
   );
+  if (otpData.numberOfUnsuccessfulAttempts >= 3) {
+    throw Error('Too many failed codes.Wait for some minutes before retrying');
+  }
   if (new Date().getTime() >= new Date(otpData.otpExpiryTime).getTime()) throw Error('Otp expired');
-  if (otpData.otp != obj.otp) throw Error('Invalid Otp');
+  if (otpData.otp != obj.otp) {
+    await Otp.findOneAndUpdate(
+      {
+        email: obj.email
+      },
+      {
+        $inc: {
+          numberOfUnsuccessfulAttempts: 1
+        }
+      }
+    );
+    throw Error('Invalid Otp');
+  }
   await Otp.findOneAndUpdate(
     {
       email: obj.email
@@ -226,7 +243,8 @@ exports.verifyOTP = async function (obj) {
     {
       $set: {
         otp: null,
-        otpExpiryTime: null
+        otpExpiryTime: null,
+        numberOfUnsuccessfulAttempts: 0
       }
     }
   );

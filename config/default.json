@@ -3,11 +3,10 @@
         "name": "Web3Auth"
     },
     "server": {
-        "host": "127.0.0.1",
+        "production": false,
+        "host": "0.0.0.0",
         "port": 5000,
-        "numCores": 2,
-        "backgroundCores": 0,
-        "runBackgroundTasks": false
+        "numCores": 0
     },
     "mongodb": {
         "url": "",
