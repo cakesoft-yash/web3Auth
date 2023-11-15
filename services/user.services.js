@@ -181,6 +181,7 @@ exports.sendMessage = async function (obj, user) {
           username: user.chatUsername
         }
       );
+      if (!chatUserData) throw Error('Please configure phone number in database to send the chat message');
       await new Promise((resolve, reject) => {
         request.post({
           headers: {
