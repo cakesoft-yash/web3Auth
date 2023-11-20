@@ -402,25 +402,25 @@ exports.getCredentials = async function (obj, user) {
     //     }
     //   );
     // }
-    const walletUser = await WalletUser.findOne(
-      {
-        username: user.username,
-        email: user.emails[0].address
-      }
-    );
-    if (walletUser && walletUser.dokuId) {
-      result.push(
-        {
-          communityName: user.loggedInApp,
-          membershipStatus: 'pending',
-          expiryTime: 0,
-          name: 'Payment Gateway Credential',
-          membershipDuration: 'Forever',
-          membershipCount: 'Unlimited',
-          logo: 'https://stagingimage.zocial.io/logo/doku.png'
-        }
-      );
-    };
+    // const walletUser = await WalletUser.findOne(
+    //   {
+    //     username: user.username,
+    //     email: user.emails[0].address
+    //   }
+    // );
+    // if (walletUser && walletUser.dokuId) {
+    //   result.push(
+    //     {
+    //       communityName: user.loggedInApp,
+    //       membershipStatus: 'pending',
+    //       expiryTime: 0,
+    //       name: 'Payment Gateway Credential',
+    //       membershipDuration: 'Forever',
+    //       membershipCount: 'Unlimited',
+    //       logo: 'https://image.zocial.io/logo/doku.png'
+    //     }
+    //   );
+    // };
     result.push(
       {
         communityName: user.loggedInApp,
@@ -429,7 +429,7 @@ exports.getCredentials = async function (obj, user) {
         name: 'Membership Credential',
         membershipDuration: user.membershipStatus === 'pending' ? 'Pending' : 'Forever',
         membershipCount: user.membershipStatus === 'pending' ? 'Pending' : 'Unlimited',
-        logo: `https://stagingimage.zocial.io/logo/${user.loggedInApp}.png`
+        logo: `https://image.zocial.io/logo/${user.loggedInApp}.png`
       }
     );
   }
