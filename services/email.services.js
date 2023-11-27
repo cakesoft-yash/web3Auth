@@ -268,7 +268,7 @@ exports.verifyOTP = async function (obj) {
     let user = await ChatUser.findOne(
       {
         'emails.address': obj.email,
-        walletAddress: { $exists: true }
+        // walletAddress: { $exists: true }
       }
     );
     if (user) userRegistered = true;
