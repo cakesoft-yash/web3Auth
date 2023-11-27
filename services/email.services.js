@@ -265,12 +265,13 @@ exports.verifyOTP = async function (obj) {
       throw Error('Wallet address and email mismatch');
     }
   } else {
-    let user = await ChatUser.findOne(
-      {
-        'emails.address': obj.email,
-        // walletAddress: { $exists: true }
-      }
-    );
+    let query = {
+      'emails.address': obj.email
+    };
+    if (obj.verifyOTPFor === 'loginPage') {
+      Object.assign(query, { walletAddress: { $exists: true } });
+    }
+    let user = await ChatUser.findOne(query);
     if (user) userRegistered = true;
     userKeyShare = await UserKeyShare.findOne(
       {
