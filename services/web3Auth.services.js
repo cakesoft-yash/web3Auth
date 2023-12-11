@@ -38,7 +38,7 @@ exports.signup = async function (obj) {
         email: obj.email,
         userName: obj.userName,
         displayUsername: obj.displayUsername,
-        loggedInApp: 'zti',
+        loggedInApp: obj.ztiAppName,
         ztiAppName: obj.ztiAppName,
         tokenId: obj.tokenId,
       },
@@ -187,12 +187,13 @@ exports.verifyPassword = async function (obj) {
 
 exports.loginWithEmail = async function (obj) {
   if (!obj.walletAddress) throw Error('Wallet address is required');
+  if (!obj.appName) throw Error('App name is required');
   let result = await new Promise((resolve, reject) => {
     request.post({
       url: config.chatServer.loginWithWallet,
       body: {
         walletAddress: obj.walletAddress,
-        loggedInApp: 'zti'
+        loggedInApp: obj.appName
       },
       json: true
     }, function (err, httpResponse, response) {
@@ -232,7 +233,7 @@ exports.verifySignMessage = async function (obj) {
       url: config.chatServer.loginWithWallet,
       body: {
         walletAddress: userAddress,
-        loggedInApp: 'zti'
+        loggedInApp: obj.appName || 'zti'
       },
       json: true
     }, function (err, httpResponse, response) {
@@ -274,7 +275,7 @@ exports.registerPrivateKey = async function (obj) {
 
 exports.verifyPasswordAndLogin = async function (obj) {
   let verifyPassword = await module.exports.verifyPassword(obj);
-  return await module.exports.loginWithEmail({ walletAddress: verifyPassword.walletAddress });
+  return await module.exports.loginWithEmail({ walletAddress: verifyPassword.walletAddress, appName: obj.appName });
 }
 
 exports.setPasswordAndRegisterKey = async function (obj) {
