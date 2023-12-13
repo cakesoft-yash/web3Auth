@@ -34,7 +34,7 @@ exports.sendOTP = async function (obj) {
       }
     );
   }
-  await Utils.sendOtp(obj.phone, `${otp} is Your One-Time Password(OTP).`);
+  if (config.server.production) await Utils.sendOtp(obj.phone, `${otp} is Your One-Time Password(OTP).`);
   return {
     success: true,
     message: 'OTP sent successfully'
