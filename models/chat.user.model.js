@@ -36,6 +36,9 @@ const UserSchema = new mongoose.Schema({
     loggedInApp: {
         type: String
     },
+    appNameForNotification: {
+        type: String
+    },
     tokenId: {
         type: Number
     },
