@@ -214,6 +214,7 @@ exports.sendOTP = async function (obj) {
 exports.verifyOTP = async function (obj) {
   if (!obj.email) throw Error('Email is required');
   if (!obj.otp) throw Error('Otp is required');
+  if (!obj.appName) throw Error('AppName is required');
   let otpData = await Otp.findOne(
     {
       email: obj.email
@@ -260,7 +261,7 @@ exports.verifyOTP = async function (obj) {
     );
     if (user) {
       userRegistered = true;
-      userData = await Web3AuthService.loginWithEmail({ walletAddress: obj.walletAddress, appName: user.loggedInApp });
+      userData = await Web3AuthService.loginWithEmail({ walletAddress: obj.walletAddress, appName: obj.appName });
     } else {
       throw Error('Wallet address and email mismatch');
     }
