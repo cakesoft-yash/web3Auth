@@ -260,7 +260,7 @@ exports.verifyOTP = async function (obj) {
     );
     if (user) {
       userRegistered = true;
-      userData = await Web3AuthService.loginWithEmail({ walletAddress: obj.walletAddress });
+      userData = await Web3AuthService.loginWithEmail({ walletAddress: obj.walletAddress, appName: user.loggedInApp });
     } else {
       throw Error('Wallet address and email mismatch');
     }
