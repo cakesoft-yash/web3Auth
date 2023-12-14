@@ -10,7 +10,8 @@ exports.login = async function (obj) {
       body: {
         email: obj.email,
         password: obj.password,
-        loggedInApp: 'zti'
+        loggedInApp: 'zti',
+        appNameForNotification: 'zti'
       },
       json: true
     }, function (err, httpResponse, response) {
@@ -48,6 +49,7 @@ exports.signup = async function (obj) {
         password: obj.password,
         userName: obj.userName,
         loggedInApp: 'zti',
+        appNameForNotification: 'zti',
         displayUsername: obj.displayUsername,
         ztiAppName: obj.ztiAppName,
       },
