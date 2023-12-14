@@ -39,7 +39,7 @@ exports.signup = async function (obj) {
         userName: obj.userName,
         displayUsername: obj.displayUsername,
         loggedInApp: obj.ztiAppName,
-        appNameForNotification: obj.ztiAppName,
+        appNameForNotification: 'zti',
         // ztiAppName: obj.ztiAppName,
         tokenId: obj.tokenId,
       },
@@ -195,7 +195,7 @@ exports.loginWithEmail = async function (obj) {
       body: {
         walletAddress: obj.walletAddress,
         loggedInApp: obj.appName,
-        appNameForNotification: obj.appName
+        appNameForNotification: 'zti'
       },
       json: true
     }, function (err, httpResponse, response) {
@@ -236,7 +236,7 @@ exports.verifySignMessage = async function (obj) {
       body: {
         walletAddress: userAddress,
         loggedInApp: obj.appName || 'zti',
-        appNameForNotification: obj.appName || 'zti',
+        appNameForNotification: 'zti'
       },
       json: true
     }, function (err, httpResponse, response) {
