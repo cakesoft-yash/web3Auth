@@ -214,7 +214,6 @@ exports.sendOTP = async function (obj) {
 exports.verifyOTP = async function (obj) {
   if (!obj.email) throw Error('Email is required');
   if (!obj.otp) throw Error('Otp is required');
-  if (!obj.appName) throw Error('AppName is required');
   let otpData = await Otp.findOne(
     {
       email: obj.email
@@ -252,6 +251,7 @@ exports.verifyOTP = async function (obj) {
   let privateKeyCreated = false; let walletAddress; let keyShare1; let keyShare2;
   let userKeyShare; let userRegistered = false; let userData;
   if (obj.walletAddressExistsOnPhone) {
+    if (!obj.appName) throw Error('AppName is required');
     if (!obj.walletAddress) throw Error('Wallet address is required');
     let user = await ChatUser.findOne(
       {
