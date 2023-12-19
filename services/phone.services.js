@@ -34,7 +34,10 @@ exports.sendOTP = async function (obj) {
       }
     );
   }
-  await Utils.sendOtp(obj.phone, `${otp} is Your One-Time Password(OTP).`);
+  let response = await Utils.sendOtpWithDoku(obj.phone, `${otp} is Your One-Time Password(OTP).`);
+  if (!response.success) {
+    await Utils.sendOtp(obj.phone, `${otp} is Your One-Time Password(OTP).`);
+  }
   return {
     success: true,
     message: 'OTP sent successfully'
