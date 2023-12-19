@@ -32,6 +32,11 @@
         "authToken": "",
         "accountSid": ""
     },
+    "dokuOtpSetting": {
+        "clientId": "",
+        "secret": "",
+        "url": ""
+    },
     "sendNotification": {
         "url": "",
         "token": ""
