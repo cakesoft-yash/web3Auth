@@ -60,6 +60,18 @@ exports.setPassword = async function (req, res) {
     }
 }
 
+exports.checkUsername = async function (req, res) {
+    try {
+        let result = await Web3AuthService.checkUsername(req.body);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
 exports.verifyPassword = async function (req, res) {
     try {
         let result = await Web3AuthService.verifyPassword(req.body);
@@ -111,6 +123,18 @@ exports.verifySignMessage = async function (req, res) {
 exports.registerPrivateKey = async function (req, res) {
     try {
         let result = await Web3AuthService.registerPrivateKey(req.body);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+exports.signUpForExistingUsers = async function (req, res) {
+    try {
+        let result = await Web3AuthService.signUpForExistingUsers(req.body);
         return res.status(200).send(result);
     } catch (error) {
         return res.status(500).send({

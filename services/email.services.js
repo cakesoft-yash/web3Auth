@@ -273,7 +273,17 @@ exports.verifyOTP = async function (obj) {
       Object.assign(query, { walletAddress: { $exists: true } });
     }
     let user = await ChatUser.findOne(query);
-    if (user) userRegistered = true;
+    if (user) {
+      userRegistered = true;
+      userData = {
+        phone: user.phone,
+        username: user.username,
+        email: user.emails[0].address,
+        lastName: user.lastName,
+        firstName: user.firstName,
+        walletAddress: user.walletAddress
+      };
+    }
     userKeyShare = await UserKeyShare.findOne(
       {
         email: obj.email

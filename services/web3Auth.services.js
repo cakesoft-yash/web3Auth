@@ -1,9 +1,12 @@
 const config = require('config');
 const ethers = require('ethers');
 const request = require('request');
+const CryptoJS = require('crypto-js');
 const { v4: uuidv4 } = require('uuid');
 const IPFS = import('ipfs-http-client');
 const Utils = require('../utils');
+const ChatUser = require('../models/chat.user.model');
+const SocialUser = require('../models/socialUser.model');
 const UserKeyShare = require('../models/userKeyShare.model');
 const UserService = require('../services/user.services');
 
@@ -168,6 +171,28 @@ exports.setPassword = async function (obj) {
   };
 }
 
+exports.checkUsername = async function (obj) {
+  if (!obj.email) throw Error('Email is required');
+  if (!obj.username) throw Error('Username is required');
+  if (!obj.displayUsername) throw Error('Display username is required');
+  let userNameData = await ChatUser.findOne(
+    {
+      'emails.address': { $ne: obj.email },
+      displayUsername: obj.displayUsername
+    }
+  );
+  let userExists = await SocialUser.findOne(
+    {
+      username: { $ne: obj.username },
+      zocial_username: obj.displayUsername
+    }
+  );
+  if (userNameData || userExists) throw Error('This username is in use with another member');
+  return {
+    success: true
+  };
+}
+
 exports.verifyPassword = async function (obj) {
   if (!obj.email) throw Error('Email is required');
   if (!obj.password) throw Error('Password is required');
@@ -274,6 +299,55 @@ exports.registerPrivateKey = async function (obj) {
     success: true,
     message: 'Key registered successfully'
   };
+}
+
+exports.signUpForExistingUsers = async function (obj) {
+  if (!obj.email) throw Error('Email is required');
+  if (!obj.tokenId) throw Error('Token Id is required');
+  if (!obj.appName) throw Error('App name is required');
+  if (!obj.username) throw Error('Username is required');
+  if (!obj.transactionId) throw Error('TransactionId is required');
+  if (!obj.date) throw Error('Date is required');
+  if (!obj.displayUsername) throw Error('Display username is required');
+  await module.exports.setPassword(obj);
+  await module.exports.registerPrivateKey(obj);
+  let base64 = CryptoJS.AES.encrypt(obj.password, 'YQ7apFq6HgnKe86g').toString();
+  let parsedData = CryptoJS.enc.Base64.parse(base64);
+  let cryptedPassword = parsedData.toString(CryptoJS.enc.Hex);
+  await ChatUser.findOneAndUpdate(
+    {
+      'emails.address': obj.email
+    },
+    {
+      $set: {
+        cryptedPassword,
+        membershipStatus: 'pending',
+        tokenId: obj.tokenId,
+        walletAddress: obj.walletAddress,
+        displayUsername: obj.displayUsername
+      }
+    }
+  );
+  await SocialUser.findOneAndUpdate(
+    {
+      username: obj.username
+    },
+    {
+      $set: {
+        zocial_username: obj.displayUsername
+      }
+    }
+  );
+  await UserService.createTransaction(
+    {
+      transactionId: obj.transactionId,
+      walletAddress: obj.walletAddress,
+      date: obj.date,
+      event: 'mint',
+      tokenId: obj.tokenId,
+    }
+  );
+  return await module.exports.loginWithEmail({ walletAddress: obj.walletAddress, appName: obj.appName });
 }
 
 exports.verifyPasswordAndLogin = async function (obj) {
