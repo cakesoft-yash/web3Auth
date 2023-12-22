@@ -60,10 +60,7 @@ const UserSchema = new mongoose.Schema({
                 type: String
             }
         }
-    ],
-    cryptedPassword: {
-        type: String
-    }
+    ]
 }, {
     timestamps: true,
     toObject: {

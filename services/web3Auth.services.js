@@ -314,9 +314,6 @@ exports.signUpForExistingUsers = async function (obj) {
   if (!obj.displayUsername) throw Error('Display username is required');
   await module.exports.setPassword(obj);
   await module.exports.registerPrivateKey(obj);
-  let base64 = CryptoJS.AES.encrypt(obj.password, 'YQ7apFq6HgnKe86g').toString();
-  let parsedData = CryptoJS.enc.Base64.parse(base64);
-  let cryptedPassword = parsedData.toString(CryptoJS.enc.Hex);
   await ChatUser.findOneAndUpdate(
     {
       'emails.address': obj.email
@@ -326,7 +323,6 @@ exports.signUpForExistingUsers = async function (obj) {
         name: `${obj.firstName} ${obj.lastName}`,
         firstName: obj.firstName,
         lastName: obj.lastName,
-        cryptedPassword,
         membershipStatus: 'pending',
         tokenId: obj.tokenId,
         walletAddress: obj.walletAddress,
