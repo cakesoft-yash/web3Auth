@@ -8,6 +8,7 @@ const Utils = require('../utils');
 const ChatUser = require('../models/chat.user.model');
 const SocialUser = require('../models/socialUser.model');
 const UserKeyShare = require('../models/userKeyShare.model');
+const MarketplaceUser = require('../models/marketplaceUser.model');
 const UserService = require('../services/user.services');
 
 exports.getSignMessage = async function () {
@@ -306,6 +307,8 @@ exports.signUpForExistingUsers = async function (obj) {
   if (!obj.tokenId) throw Error('Token Id is required');
   if (!obj.appName) throw Error('App name is required');
   if (!obj.username) throw Error('Username is required');
+  if (!obj.firstName) throw Error('Firstname is required');
+  if (!obj.lastName) throw Error('Lastname is required');
   if (!obj.transactionId) throw Error('TransactionId is required');
   if (!obj.date) throw Error('Date is required');
   if (!obj.displayUsername) throw Error('Display username is required');
@@ -320,6 +323,9 @@ exports.signUpForExistingUsers = async function (obj) {
     },
     {
       $set: {
+        name: `${obj.firstName} ${obj.lastName}`,
+        firstName: obj.firstName,
+        lastName: obj.lastName,
         cryptedPassword,
         membershipStatus: 'pending',
         tokenId: obj.tokenId,
@@ -334,7 +340,18 @@ exports.signUpForExistingUsers = async function (obj) {
     },
     {
       $set: {
-        zocial_username: obj.displayUsername
+        zocial_username: obj.displayUsername,
+        'data.name': `${obj.firstName} ${obj.lastName}`
+      }
+    }
+  );
+  await MarketplaceUser.findOneAndUpdate(
+    {
+      username: obj.username
+    },
+    {
+      $set: {
+        name: `${obj.firstName} ${obj.lastName}`
       }
     }
   );
