@@ -48,6 +48,9 @@ const UserSchema = new mongoose.Schema({
     createdAt: {
         type: Date
     },
+    isBlocked: {
+        type: Boolean
+    },
     membershipAppeal: [
         {
             _id: {

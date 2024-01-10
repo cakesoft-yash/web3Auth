@@ -260,6 +260,7 @@ exports.verifyOTP = async function (obj) {
       }
     );
     if (user) {
+      if (user.isBlocked) throw Error('Account with this email is blocked');
       userRegistered = true;
       userData = await Web3AuthService.loginWithEmail({ walletAddress: obj.walletAddress, appName: obj.appName });
     } else {
@@ -274,6 +275,7 @@ exports.verifyOTP = async function (obj) {
     }
     let user = await ChatUser.findOne(query);
     if (user) {
+      if (user.isBlocked) throw Error('Account with this email is blocked');
       userRegistered = true;
       userData = {
         phone: user.phone,
