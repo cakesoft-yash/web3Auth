@@ -249,7 +249,18 @@ exports.verifyOTP = async function (obj) {
     }
   );
   let privateKeyCreated = false; let walletAddress; let keyShare1; let keyShare2;
-  let userKeyShare; let userRegistered = false; let userData;
+  let userRegistered = false; let userData;
+  let userKeyShare = await UserKeyShare.findOne(
+    {
+      email: obj.email
+    }
+  );
+  if (userKeyShare) {
+    privateKeyCreated = true;
+    walletAddress = userKeyShare.walletAddress;
+    keyShare1 = userKeyShare.keyShare1;
+    keyShare2 = userKeyShare.keyShare2;
+  }
   if (obj.walletAddressExistsOnPhone) {
     if (!obj.appName) throw Error('AppName is required');
     if (!obj.walletAddress) throw Error('Wallet address is required');
@@ -262,7 +273,9 @@ exports.verifyOTP = async function (obj) {
     if (user) {
       if (user.isBlocked) throw Error('Account with this email is blocked');
       userRegistered = true;
-      userData = await Web3AuthService.loginWithEmail({ walletAddress: obj.walletAddress, appName: obj.appName });
+      if (obj.verifyOTPFor === 'loginPage') {
+        userData = await Web3AuthService.loginWithEmail({ walletAddress: obj.walletAddress, appName: obj.appName });
+      }
     } else {
       throw Error('Wallet address and email mismatch');
     }
@@ -285,17 +298,6 @@ exports.verifyOTP = async function (obj) {
         firstName: user.firstName,
         walletAddress: user.walletAddress
       };
-    }
-    userKeyShare = await UserKeyShare.findOne(
-      {
-        email: obj.email
-      }
-    );
-    if (userKeyShare) {
-      privateKeyCreated = true;
-      walletAddress = userKeyShare.walletAddress;
-      keyShare1 = userKeyShare.keyShare1;
-      keyShare2 = userKeyShare.keyShare2;
     }
   }
   if (obj.publicAddress) {
