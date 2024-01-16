@@ -320,6 +320,7 @@ exports.signUpForExistingUsers = async function (obj) {
     },
     {
       $set: {
+        ztiRegistered: true,
         name: `${obj.firstName} ${obj.lastName}`,
         firstName: obj.firstName,
         lastName: obj.lastName,

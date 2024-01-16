@@ -51,6 +51,9 @@ const UserSchema = new mongoose.Schema({
     isBlocked: {
         type: Boolean
     },
+    ztiRegistered: {
+        type: Boolean
+    },
     membershipAppeal: [
         {
             _id: {
