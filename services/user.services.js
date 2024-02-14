@@ -195,10 +195,17 @@ exports.sendMessage = async function (obj, user) {
           json: true
         }, function (err, httpResponse, response) {
           if (err) {
-            reject(err);
+            reject(new Error(err));
             return;
           }
-          if (!response.success) reject(response);
+          if (response && typeof response === 'string' && response.includes('Application is not available')) {
+            reject(new Error('Chat server not available. Please try after some time'));
+            return;
+          }
+          if (!response.success) {
+            reject(new Error(response));
+            return;
+          }
           resolve(response);
         });
       });
