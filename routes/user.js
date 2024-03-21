@@ -32,6 +32,7 @@ router.get('/getTokenId', UserController.getTokenId);
 router.get('/membershipStatus', AuthController.verifyTokenForUser, UserController.getMembershipStatus);
 
 router.post('/list', AuthController.verifyTokenForAdmin, UserController.getUsers);
+router.post('/exportData', AuthController.verifyTokenForAdmin, UserController.exportData);
 router.post('/sendMessage', AuthController.verifyTokenForAdmin, UserController.sendMessage);
 router.post('/transactions', AuthController.verifyTokenForAdmin, UserController.getTransactions);
 router.post('/transaction/create', AuthController.verifyTokenForAdmin, UserController.createTransaction);

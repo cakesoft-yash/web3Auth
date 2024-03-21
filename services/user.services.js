@@ -170,6 +170,65 @@ exports.getUsers = async function (obj, user) {
   };
 }
 
+exports.exportData = async function (obj, user) {
+  if (!obj.ztiAppName) throw Error('Community name is required');
+  let query = {
+    'registeredApps.appName': obj.ztiAppName
+  };
+  if (obj.membershipStatus) Object.assign(query,
+    {
+      walletAddress: { $exists: true },
+      walletAddress: { $ne: null },
+      membershipStatus: obj.membershipStatus
+    }
+  );
+  if (obj.search) Object.assign(query,
+    {
+      $or: [
+        { firstName: new RegExp(obj.search, 'i') },
+        { lastName: new RegExp(obj.search, 'i') },
+        { walletAddress: new RegExp(obj.search, 'i') },
+        { phone: new RegExp(obj.search, 'i') },
+        { username: new RegExp(obj.search, 'i') },
+        { displayUsername: new RegExp(obj.search, 'i') },
+        { 'emails.address': new RegExp(obj.search, 'i') },
+      ]
+    }
+  );
+  let users = await ChatUser.aggregate([
+    { $match: query },
+    { $unwind: '$emails' },
+    {
+      $project: {
+        email: '$emails.address',
+        firstName: 1,
+        lastName: 1,
+        phone: 1,
+        displayUsername: 1,
+        walletAddress: 1,
+        membershipStatus: 1,
+        createdAt: 1,
+      }
+    },
+    { $sort: { createdAt: -1 } },
+  ]);
+  let csvHeaders = [
+    { label: 'Email', key: 'email' },
+    { label: 'First Name', key: 'firstName' },
+    { label: 'Last Name', key: 'lastName' },
+    { label: 'Phone', key: 'phone' },
+    { label: 'Username', key: 'displayUsername' },
+    { label: 'Wallet Address', key: 'walletAddress' },
+    { label: 'Status', key: 'membershipStatus' },
+    { label: 'CreatedAt', key: 'createdAt' },
+  ];
+  return {
+    success: true,
+    csvData: users,
+    csvHeaders
+  };
+}
+
 exports.sendMessage = async function (obj, user) {
   if (!obj.messageType) throw Error('Message type is required');
   if (!obj.message) throw Error('Message is required');
