@@ -58,7 +58,7 @@ exports.signup = async function (obj) {
         return;
       }
       if (!response.success) {
-        reject(new Error(response));
+        reject(new Error(response.message || response.error || response));
         return;
       }
       resolve(response);
@@ -115,7 +115,7 @@ exports.verifyData = async function (obj) {
         return;
       }
       if (!response.success) {
-        reject(new Error(response));
+        reject(new Error(response.message || response.error || response));
         return;
       }
       resolve(response);
@@ -248,7 +248,7 @@ exports.loginWithEmail = async function (obj) {
         return;
       }
       if (!response.success) {
-        reject(new Error(response));
+        reject(new Error(response.message || response.error || response));
         return;
       }
       resolve(response);
@@ -296,7 +296,7 @@ exports.verifySignMessage = async function (obj) {
         return;
       }
       if (!response.success) {
-        reject(new Error(response));
+        reject(new Error(response.message || response.error || response));
         return;
       }
       resolve(response);

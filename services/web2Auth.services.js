@@ -24,7 +24,7 @@ exports.login = async function (obj) {
         return;
       }
       if (!response.success) {
-        reject(new Error(response));
+        reject(new Error(response.message || response.error || response));
         return;
       }
       resolve(response);
@@ -71,7 +71,7 @@ exports.signup = async function (obj) {
         return;
       }
       if (!response.success) {
-        reject(new Error(response));
+        reject(new Error(response.message || response.error || response));
         return;
       }
       resolve(response);
