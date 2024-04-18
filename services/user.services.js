@@ -262,7 +262,7 @@ exports.sendMessage = async function (obj, user) {
             return;
           }
           if (!response.success) {
-            reject(new Error(response));
+            reject(new Error(response.message || response.error || response));
             return;
           }
           resolve(response);
