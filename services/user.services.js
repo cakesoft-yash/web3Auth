@@ -8,6 +8,7 @@ const Shop = require('../models/shop.model');
 const ChatUser = require('../models/chat.user.model');
 const SocialUser = require('../models/socialUser.model');
 const WalletUser = require('../models/wallet.user.model');
+const MultipleUser = require('../models/multipleUser.model');
 const MarketplaceUser = require('../models/marketplaceUser.model');
 const Web3UserTransaction = require('../models/web3UserTransaction.model');
 const NotificationService = require('../services/notification.service');
@@ -380,6 +381,60 @@ exports.createTransaction = async function (obj, adminUser) {
   }
   return {
     success: true
+  };
+}
+
+exports.registerMultipleUsers = async function (obj, adminUser) {
+  if (!obj.users || !obj.users.length) throw Error('Atleast one user is required');
+  let dataForInsert = []; let dataForFindQuery = [];
+  for (let index = 0; index < obj.users.length; index++) {
+    const user = obj.users[index];
+    if (!user.srNo) throw Error('Sr No is required');
+    if (!user.firstName) throw Error(`FirstName is required for SR No : ${user.srNo}`);
+    if (!user.lastName) throw Error(`LastName is required for SR No : ${user.srNo}`);
+    if (!user.phone) throw Error(`Phone is required for SR No : ${user.srNo}`);
+    if (!user.email) throw Error(`Email is required for SR No : ${user.srNo}`);
+    if (!user.username) throw Error(`Username is required for SR No : ${user.srNo}`);
+    if (!user.displayUsername) throw Error(`DisplayUsername is required for SR No : ${user.srNo}`);
+    if (!user.loggedInApp) throw Error(`App name is required for SR No : ${user.srNo}`);
+    dataForInsert.push(
+      {
+        srNo: user.srNo,
+        _id: uuidv4(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        email: user.email,
+        username: user.username,
+        displayUsername: user.displayUsername,
+        loggedInApp: user.loggedInApp,
+        appNameForNotification: user.appNameForNotification,
+      }
+    );
+    dataForFindQuery.push(
+      {
+        phone: user.phone,
+        email: user.email,
+        displayUsername: user.displayUsername,
+      }
+    );
+  };
+  let userExists = await MultipleUser.find(
+    {
+      $or: dataForFindQuery
+    }
+  );
+  if (userExists.length) {
+    let userSrNo = userExists.map(user => {
+      let userFromData = dataForInsert.find(userData => userData.phone === user.phone && userData.email === user.email);
+      return userFromData.srNo;
+    }).join(',');
+    throw Error(`User already register for SR NO : ${userSrNo}`);
+  }
+  await MultipleUser.insertMany(dataForInsert);
+  return {
+    success: true,
+    message: 'User reqistered successfully'
   };
 }
 

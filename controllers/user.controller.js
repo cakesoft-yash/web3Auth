@@ -96,6 +96,18 @@ exports.createTransaction = async function (req, res) {
     }
 }
 
+exports.registerMultipleUsers = async function (req, res) {
+    try {
+        let result = await UserService.registerMultipleUsers(req.body, req.user);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
 exports.updateUser = async function (req, res) {
     try {
         let result = await UserService.updateUser(req.body, req.user);

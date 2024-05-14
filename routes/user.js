@@ -36,6 +36,7 @@ router.post('/exportData', AuthController.verifyTokenForAdmin, UserController.ex
 router.post('/sendMessage', AuthController.verifyTokenForAdmin, UserController.sendMessage);
 router.post('/transactions', AuthController.verifyTokenForAdmin, UserController.getTransactions);
 router.post('/transaction/create', AuthController.verifyTokenForAdmin, UserController.createTransaction);
+router.post('/register/multiple', AuthController.verifyTokenForAdmin, UserController.registerMultipleUsers);
 
 router.post('/update', AuthController.verifyTokenForUser, UserController.updateUser);
 router.post('/getCredentials', AuthController.verifyTokenForUser, UserController.getCredentials);

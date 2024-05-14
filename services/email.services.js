@@ -6,6 +6,7 @@ const Shop = require('../models/shop.model');
 const Admin = require('../models/admin.model');
 const ChatUser = require('../models/chat.user.model');
 const UserKeyShare = require('../models/userKeyShare.model');
+const MultipleUser = require('../models/multipleUser.model');
 const MarketplaceGlobal = require('../models/marketplaceGlobal.model');
 const Web3AuthService = require('../services/web3Auth.services');
 
@@ -298,6 +299,24 @@ exports.verifyOTP = async function (obj) {
         firstName: user.firstName,
         walletAddress: user.walletAddress
       };
+    } else {
+      if (obj.verifyOTPFor === 'signupPage') {
+        let userExists = await MultipleUser.findOne(
+          {
+            email: obj.email
+          }
+        );
+        if (userExists) {
+          userData = {
+            phone: userExists.phone,
+            username: userExists.username,
+            email: userExists.email,
+            lastName: userExists.lastName,
+            firstName: userExists.firstName,
+            displayUsername: userExists.displayUsername
+          };
+        }
+      }
     }
   }
   if (obj.publicAddress) {
