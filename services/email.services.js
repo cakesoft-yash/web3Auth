@@ -208,6 +208,7 @@ exports.sendOTP = async function (obj) {
   }
   return {
     success: true,
+    otpExpiryTime,
     message: 'OTP sent successfully'
   }
 }
